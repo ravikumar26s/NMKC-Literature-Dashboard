@@ -22,9 +22,7 @@
             --success: #107c41; 
         }
 
-        /* --- BASE RESET & ANIMATIONS --- */
         * {
-            /* Removes the blue highlight on mobile when tapping buttons */
             -webkit-tap-highlight-color: transparent; 
         }
 
@@ -33,15 +31,25 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
             display: flex;
-            height: 100vh;
+            
+            /* FIXED MOBILE BOTTOM ISSUE: Uses Dynamic Viewport Height */
+            height: 100vh; /* Fallback for very old browsers */
+            height: 100dvh; /* Adapts to mobile browser address bars */
+            
             overflow: hidden;
-            /* Prevents pull-to-refresh on mobile browsers */
             overscroll-behavior-y: none; 
         }
 
-        @keyframes fadeAndSlideIn {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
+        /* --- PREMIUM TAB SWITCHING ANIMATION --- */
+        @keyframes tabEnter {
+            0% { 
+                opacity: 0; 
+                transform: translateY(15px) scale(0.99); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
         }
 
         @keyframes pulseSoft {
@@ -55,13 +63,12 @@
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
-        /* --- IMPRESSIVE SPLASH SCREEN --- */
+        /* --- SPLASH SCREEN --- */
         #splash-screen {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             width: 100vw;
-            height: 100vh;
+            height: 100dvh; /* Updated for mobile */
             background-color: #0f1420; 
             z-index: 9999;
             display: flex;
@@ -143,6 +150,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
+            height: 100dvh; /* Updated */
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 90;
             backdrop-filter: blur(3px);
@@ -152,6 +160,7 @@
         /* --- SIDEBAR --- */
         .sidebar {
             width: 280px; 
+            height: 100dvh; /* Updated */
             background-color: var(--sidebar-bg);
             color: white;
             display: flex;
@@ -160,7 +169,6 @@
             box-shadow: 4px 0 15px rgba(0,0,0,0.1);
             overflow-y: auto; 
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            /* Native momentum scrolling for the sidebar on mobile */
             -webkit-overflow-scrolling: touch;
         }
         
@@ -194,7 +202,7 @@
             border: none;
             color: #9ca3af;
             cursor: pointer;
-            padding: 8px; /* Larger touch target for mobile */
+            padding: 8px; 
             margin: -8px;
             transition: color 0.2s;
         }
@@ -213,7 +221,7 @@
         }
         
         .nav-item {
-            padding: 14px 24px 14px 34px; /* Taller padding for easier finger tapping */
+            padding: 14px 24px 14px 34px; 
             color: #d1d5db;
             text-decoration: none;
             border-left: 4px solid transparent;
@@ -226,7 +234,6 @@
             font-size: 0.95rem;
         }
         
-        /* Hover Effect (only visible on desktop mice) */
         @media (hover: hover) {
             .nav-item:hover {
                 background-color: var(--sidebar-hover);
@@ -249,7 +256,7 @@
             color: var(--accent);
         }
 
-        /* --- NEW SIDEBAR FOOTER --- */
+        /* --- SIDEBAR FOOTER --- */
         .sidebar-footer {
             margin-top: auto; 
             padding: 20px;
@@ -263,6 +270,8 @@
             flex-direction: column;
             align-items: center;
             gap: 8px;
+            /* Extra padding at bottom to ensure it clears safe-areas on modern phones */
+            padding-bottom: env(safe-area-inset-bottom, 20px); 
         }
 
         /* --- MAIN CONTENT --- */
@@ -271,6 +280,7 @@
             display: flex;
             flex-direction: column;
             width: calc(100% - 280px);
+            height: 100dvh; /* Updated */
             overflow: hidden;
         }
 
@@ -293,7 +303,7 @@
             border: none;
             cursor: pointer;
             color: var(--text-main);
-            padding: 8px; /* Larger touch target */
+            padding: 8px; 
             margin-left: -8px;
             margin-right: 4px;
             transition: transform 0.2s;
@@ -391,7 +401,6 @@
             flex-direction: column;
             overflow: hidden;
             position: relative;
-            /* Fixes native scrolling inside the iframe on iPhones */
             -webkit-overflow-scrolling: touch; 
         }
         
@@ -407,11 +416,12 @@
             background-color: white; 
         }
         
+        /* THE NEW TAB ANIMATION APPLIED HERE */
         .iframe-view.active {
             opacity: 1;
             pointer-events: auto;
             z-index: 2;
-            animation: fadeAndSlideIn 0.5s ease-out forwards; 
+            animation: tabEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         }
 
         /* ========================================= */
@@ -421,7 +431,6 @@
             .sidebar {
                 position: fixed;
                 top: 0; left: 0;
-                height: 100vh;
                 transform: translateX(-100%); 
             }
             .sidebar.mobile-open { transform: translateX(0); }
@@ -445,11 +454,13 @@
             
             .controls-container { 
                 justify-content: space-between; 
-                gap: 8px; /* Tighter gap for smaller screens */
+                gap: 8px; 
             }
             
             .dashboard-wrapper { 
                 padding: 12px; 
+                /* Adds padding at the bottom so it isn't completely flush with mobile edge */
+                padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
             }
             
             .card { 
@@ -465,7 +476,7 @@
             }
             
             .splash-title { 
-                font-size: 1.2rem; /* Scaled down slightly so it doesn't break into 4 lines */
+                font-size: 1.2rem; 
             }
         }
     </style>
@@ -569,7 +580,6 @@
                 splash.style.opacity = '0';
                 splash.style.visibility = 'hidden';
                 
-                // Change the theme color meta tag to match the light app background after splash screen hides
                 setTimeout(() => {
                     document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff');
                 }, 600);
@@ -584,25 +594,31 @@
             document.getElementById('menu-overlay').classList.toggle('mobile-open');
         }
 
-        // --- TAB SWITCHING ---
+        // --- TAB SWITCHING (ANIMATION TRIGGER) ---
         let currentActiveIframeId = 'kalamboli-hindi'; 
 
         function switchTab(targetId, newTitle, clickedElement) {
+            // Prevent re-animating if you click the tab you are already on
             if (currentActiveIframeId === targetId) return;
 
+            // 1. Update the top bar title
             document.getElementById('dashboard-title').innerText = newTitle;
             
+            // 2. Remove active state from old buttons and iframes
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.iframe-view').forEach(iframe => iframe.classList.remove('active'));
             
+            // 3. Highlight new button
             clickedElement.classList.add('active');
             
+            // 4. Force browser reflow to restart CSS animation smoothly
             const targetIframe = document.getElementById(targetId);
             void targetIframe.offsetWidth; 
             targetIframe.classList.add('active');
             
             currentActiveIframeId = targetId;
 
+            // 5. Close menu automatically on mobile
             if (window.innerWidth <= 900) {
                 toggleMobileMenu();
             }
