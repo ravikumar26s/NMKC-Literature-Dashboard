@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f1420">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
     <title>Navi Mumbai Kalamboli Congregation Dashboard</title>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -16,7 +22,12 @@
             --success: #107c41; 
         }
 
-        /* --- BASE RESET --- */
+        /* --- BASE RESET & ANIMATIONS --- */
+        * {
+            /* Removes the blue highlight on mobile when tapping buttons */
+            -webkit-tap-highlight-color: transparent; 
+        }
+
         body {
             margin: 0;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -24,16 +35,117 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            /* Prevents pull-to-refresh on mobile browsers */
+            overscroll-behavior-y: none; 
         }
 
-        /* --- SIDEBAR OVERLAY (HIDDEN ON DESKTOP) --- */
+        @keyframes fadeAndSlideIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseSoft {
+            0% { box-shadow: 0 0 0 0 rgba(16, 124, 65, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 124, 65, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 124, 65, 0); }
+        }
+
+        .material-symbols-rounded {
+            font-size: 20px;
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* --- IMPRESSIVE SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f1420; 
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .splash-logo {
+            font-size: 64px;
+            color: var(--accent);
+            margin-bottom: 20px;
+            animation: floatLogo 3s ease-in-out infinite;
+        }
+
+        .splash-title {
+            color: white;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin: 0;
+            opacity: 0;
+            max-width: 95%;
+            line-height: 1.3;
+            animation: fadeInText 1s forwards 0.3s; 
+        }
+
+        .splash-subtitle {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeInText 1s forwards 0.6s;
+        }
+
+        .loader-container {
+            width: 200px;
+            max-width: 80%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 30px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInText 1s forwards 0.8s;
+        }
+
+        .loader-bar {
+            height: 100%;
+            width: 0;
+            background-color: var(--accent);
+            border-radius: 4px;
+            animation: loadBar 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5)); }
+            50% { transform: translateY(-10px); filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.8)); }
+        }
+        @keyframes fadeInText {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px); }
+        }
+        @keyframes loadBar {
+            0% { width: 0; }
+            40% { width: 60%; }
+            80% { width: 80%; }
+            100% { width: 100%; }
+        }
+
+        /* --- SIDEBAR OVERLAY --- */
         .sidebar-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 90;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(3px);
             transition: opacity 0.3s ease;
         }
 
@@ -45,38 +157,48 @@
             display: flex;
             flex-direction: column;
             z-index: 100;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
             overflow-y: auto; 
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Native momentum scrolling for the sidebar on mobile */
+            -webkit-overflow-scrolling: touch;
         }
         
         .sidebar-header {
-            padding: 20px;
+            padding: 24px 20px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .sidebar h2 {
             margin: 0;
             font-size: 1.05rem; 
             color: var(--accent);
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
             line-height: 1.4;
         }
 
-        /* Close button inside sidebar (mobile only) */
         .close-menu-btn {
             display: none;
             background: none;
             border: none;
-            color: white;
-            font-size: 1.5rem;
+            color: #9ca3af;
             cursor: pointer;
-            padding: 0;
-            line-height: 1;
+            padding: 8px; /* Larger touch target for mobile */
+            margin: -8px;
+            transition: color 0.2s;
         }
+        .close-menu-btn:active { color: white; }
 
         .nav-group {
             padding: 15px 24px 8px 24px;
@@ -85,27 +207,62 @@
             color: #9ca3af;
             letter-spacing: 1px;
             font-weight: 700;
-            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .nav-item {
-            padding: 12px 24px 12px 34px; 
+            padding: 14px 24px 14px 34px; /* Taller padding for easier finger tapping */
             color: #d1d5db;
             text-decoration: none;
             border-left: 4px solid transparent;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             cursor: pointer;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-size: 0.95rem;
         }
         
-        .nav-item.active, .nav-item:hover {
+        /* Hover Effect (only visible on desktop mice) */
+        @media (hover: hover) {
+            .nav-item:hover {
+                background-color: var(--sidebar-hover);
+                transform: translateX(4px); 
+                color: white;
+            }
+        }
+
+        .nav-item:active {
+            background-color: var(--sidebar-hover);
+            color: white;
+        }
+
+        .nav-item.active {
             background-color: var(--sidebar-hover);
             border-left: 4px solid var(--accent);
-            color: white;
+            color: var(--accent);
+        }
+        .nav-item.active .material-symbols-rounded {
+            color: var(--accent);
+        }
+
+        /* --- NEW SIDEBAR FOOTER --- */
+        .sidebar-footer {
+            margin-top: auto; 
+            padding: 20px;
+            font-size: 0.75rem;
+            color: #6b7280;
+            line-height: 1.5;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background-color: rgba(0,0,0,0.2); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
 
         /* --- MAIN CONTENT --- */
@@ -125,21 +282,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
             gap: 15px;
             z-index: 10;
         }
         
-        /* Mobile hamburger button */
         .open-menu-btn {
             display: none;
             background: none;
             border: none;
-            font-size: 1.5rem;
             cursor: pointer;
             color: var(--text-main);
-            padding: 0 10px 0 0;
+            padding: 8px; /* Larger touch target */
+            margin-left: -8px;
+            margin-right: 4px;
+            transition: transform 0.2s;
         }
+        .open-menu-btn:active { transform: scale(0.9); }
 
         .title-wrapper {
             display: flex;
@@ -153,7 +312,7 @@
             font-weight: 600;
         }
 
-        /* --- CONTROLS (TIMER & BUTTONS) --- */
+        /* --- CONTROLS --- */
         .controls-container {
             display: flex;
             align-items: center;
@@ -167,17 +326,19 @@
             background-color: var(--bg-color);
             padding: 8px 16px;
             border-radius: 8px;
-            font-weight: 500;
+            font-weight: 600;
             border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: opacity 0.3s;
         }
         
         .timer-display span {
             color: #d97706;
-            font-weight: 700;
             font-variant-numeric: tabular-nums;
             display: inline-block;
-            width: 46px; 
+            width: 65px; 
             text-align: center;
         }
 
@@ -189,24 +350,28 @@
             font-size: 0.9rem;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        button.action-btn:active { transform: scale(0.97); }
+        button.action-btn:active { transform: scale(0.95); }
 
         .btn-refresh {
             background-color: var(--success);
-            box-shadow: 0 2px 4px rgba(16, 124, 65, 0.2);
+            box-shadow: 0 4px 6px rgba(16, 124, 65, 0.2);
         }
-        .btn-refresh:hover { background-color: #0c5e31; }
+        .btn-refresh.animating {
+            animation: pulseSoft 1.5s infinite;
+        }
 
         .btn-pause {
             background-color: #d97706;
-            box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
-            width: 100px;
+            box-shadow: 0 4px 6px rgba(217, 119, 6, 0.2);
+            width: 105px;
+            justify-content: center;
         }
-        .btn-pause:hover { background-color: #b45309; }
-        .btn-pause.is-paused { background-color: #4b5563; }
-        .btn-pause.is-paused:hover { background-color: #374151; }
+        .btn-pause.is-paused { background-color: #4b5563; box-shadow: none; }
 
         /* --- IFRAME CONTAINER --- */
         .dashboard-wrapper {
@@ -219,13 +384,15 @@
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             position: relative;
+            /* Fixes native scrolling inside the iframe on iPhones */
+            -webkit-overflow-scrolling: touch; 
         }
         
         .iframe-view {
@@ -237,7 +404,6 @@
             left: 0;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
             background-color: white; 
         }
         
@@ -245,100 +411,142 @@
             opacity: 1;
             pointer-events: auto;
             z-index: 2;
+            animation: fadeAndSlideIn 0.5s ease-out forwards; 
         }
 
         /* ========================================= */
-        /* MOBILE RESPONSIVE (SLIDE-OUT MENU)        */
+        /* MOBILE RESPONSIVE (APP-LIKE BEHAVIOR)     */
         /* ========================================= */
         @media (max-width: 900px) {
             .sidebar {
                 position: fixed;
-                top: 0;
-                left: 0;
+                top: 0; left: 0;
                 height: 100vh;
-                transform: translateX(-100%); /* Hides it off screen */
+                transform: translateX(-100%); 
             }
-            .sidebar.mobile-open {
-                transform: translateX(0); /* Slides it in */
-            }
-            .sidebar-overlay.mobile-open {
-                display: block; /* Shows the dark backdrop */
-            }
-            .close-menu-btn {
-                display: block;
-            }
-            .main-content {
-                width: 100%;
-            }
-            .open-menu-btn {
-                display: block;
-            }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar-overlay.mobile-open { display: block; }
+            .close-menu-btn { display: block; }
+            .main-content { width: 100%; }
+            .open-menu-btn { display: block; }
+            
             .top-bar {
-                padding: 12px 20px;
+                padding: 14px 16px;
                 flex-direction: column;
                 align-items: stretch;
             }
             .title-wrapper {
                 justify-content: flex-start;
-                margin-bottom: 10px;
-                padding-bottom: 10px;
-                border-bottom: 1px solid #f3f4f6;
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #e5e7eb;
             }
-            .top-bar h1 {
-                font-size: 1.15rem;
+            .top-bar h1 { font-size: 1.15rem; }
+            
+            .controls-container { 
+                justify-content: space-between; 
+                gap: 8px; /* Tighter gap for smaller screens */
             }
-            .controls-container {
-                justify-content: space-between;
+            
+            .dashboard-wrapper { 
+                padding: 12px; 
             }
-            .dashboard-wrapper {
-                padding: 12px;
+            
+            .card { 
+                border-radius: 8px; 
             }
-            .card {
-                border-radius: 8px;
+            
+            button.action-btn { 
+                padding: 8px 12px; 
+                font-size: 0.85rem; 
             }
-            button.action-btn {
-                padding: 8px 12px;
-                font-size: 0.85rem;
+            .btn-pause { 
+                width: 95px; 
             }
-            .btn-pause {
-                width: 90px;
+            
+            .splash-title { 
+                font-size: 1.2rem; /* Scaled down slightly so it doesn't break into 4 lines */
             }
         }
     </style>
 </head>
 <body>
 
+    <div id="splash-screen">
+        <span class="material-symbols-rounded splash-logo">dashboard</span>
+        <h1 class="splash-title">Navi Mumbai Kalamboli<br>Congregation</h1>
+        <p class="splash-subtitle">Initializing Data Hub...</p>
+        
+        <div class="loader-container">
+            <div class="loader-bar"></div>
+        </div>
+    </div>
+
+
     <div class="sidebar-overlay" id="menu-overlay" onclick="toggleMobileMenu()"></div>
 
     <div class="sidebar" id="app-sidebar">
-        <div class="sidebar-header">
-            <h2>Navi Mumbai Kalamboli<br>Congregation</h2>
-            <button class="close-menu-btn" onclick="toggleMobileMenu()">✕</button>
+        <div>
+            <div class="sidebar-header">
+                <div class="sidebar-header-title">
+                    <span class="material-symbols-rounded">dashboard</span>
+                    <h2>Navi Mumbai Kalamboli<br>Congregation</h2>
+                </div>
+                <button class="close-menu-btn" onclick="toggleMobileMenu()">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+
+            <div class="nav-group">
+                <span class="material-symbols-rounded" style="font-size: 16px;">folder_open</span>
+                Kalamboli Congregation
+            </div>
+            <div class="nav-item active" onclick="switchTab('kalamboli-hindi', 'Kalamboli Literature - Hindi', this)">
+                <span class="material-symbols-rounded">description</span> Hindi
+            </div>
+            <div class="nav-item" onclick="switchTab('kalamboli-english', 'Kalamboli Literature - English', this)">
+                <span class="material-symbols-rounded">description</span> English
+            </div>
+            <div class="nav-item" onclick="switchTab('kalamboli-marathi', 'Kalamboli Literature - Marathi', this)">
+                <span class="material-symbols-rounded">description</span> Marathi
+            </div>
+
+            <div class="nav-group" style="margin-top: 15px;">
+                <span class="material-symbols-rounded" style="font-size: 16px;">folder_open</span>
+                Language Congregation
+            </div>
+            <div class="nav-item" onclick="switchTab('language-hindi', 'Language Congregation Literature - Hindi', this)">
+                <span class="material-symbols-rounded">description</span> Hindi
+            </div>
         </div>
-
-        <div class="nav-group">Kalamboli Congregation</div>
-        <div class="nav-item active" onclick="switchTab('kalamboli-hindi', 'Kalamboli Literature - Hindi', this)">📄 Hindi</div>
-        <div class="nav-item" onclick="switchTab('kalamboli-english', 'Kalamboli Literature - English', this)">📄 English</div>
-        <div class="nav-item" onclick="switchTab('kalamboli-marathi', 'Kalamboli Literature - Marathi', this)">📄 Marathi</div>
-
-        <div class="nav-group">Language Congregation</div>
-        <div class="nav-item" onclick="switchTab('language-hindi', 'Language Congregation Literature - Hindi', this)">📄 Hindi</div>
+        
+        <div class="sidebar-footer">
+            <span class="material-symbols-rounded" style="font-size: 18px; color: var(--accent);">support_agent</span>
+            <span>This page is owned and maintained by Br. Ravikumar. You can contact the page owner to report issues on this page.</span>
+        </div>
     </div>
 
     <div class="main-content">
         <div class="top-bar">
             
             <div class="title-wrapper">
-                <button class="open-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <button class="open-menu-btn" onclick="toggleMobileMenu()">
+                    <span class="material-symbols-rounded">menu</span>
+                </button>
                 <h1 id="dashboard-title">Kalamboli Literature - Hindi</h1>
             </div>
             
             <div class="controls-container">
                 <div class="timer-display" id="timer-ui">
-                    Auto-refresh: <span id="countdown">30:00</span>
+                    <span class="material-symbols-rounded" style="font-size: 18px;">schedule</span>
+                    Refresh in: <span id="countdown">12:00:00</span>
                 </div>
-                <button id="pause-btn" class="action-btn btn-pause" onclick="toggleAutoRefresh()">⏸ Pause</button>
-                <button class="action-btn btn-refresh" onclick="triggerManualRefresh()">↻ Refresh</button>
+                <button id="pause-btn" class="action-btn btn-pause" onclick="toggleAutoRefresh()">
+                    <span class="material-symbols-rounded" id="pause-icon">pause</span> <span id="pause-text">Pause</span>
+                </button>
+                <button class="action-btn btn-refresh" id="refresh-btn" onclick="triggerManualRefresh()">
+                    <span class="material-symbols-rounded">sync</span> Refresh
+                </button>
             </div>
 
         </div>
@@ -354,6 +562,22 @@
     </div>
 
     <script>
+        // --- SPLASH SCREEN LAUNCH LOGIC ---
+        function initializeApp() {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                
+                // Change the theme color meta tag to match the light app background after splash screen hides
+                setTimeout(() => {
+                    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff');
+                }, 600);
+
+                startTimer();
+            }, 2600); 
+        }
+
         // --- MOBILE MENU LOGIC ---
         function toggleMobileMenu() {
             document.getElementById('app-sidebar').classList.toggle('mobile-open');
@@ -364,30 +588,38 @@
         let currentActiveIframeId = 'kalamboli-hindi'; 
 
         function switchTab(targetId, newTitle, clickedElement) {
+            if (currentActiveIframeId === targetId) return;
+
             document.getElementById('dashboard-title').innerText = newTitle;
+            
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            clickedElement.classList.add('active');
             document.querySelectorAll('.iframe-view').forEach(iframe => iframe.classList.remove('active'));
-            document.getElementById(targetId).classList.add('active');
+            
+            clickedElement.classList.add('active');
+            
+            const targetIframe = document.getElementById(targetId);
+            void targetIframe.offsetWidth; 
+            targetIframe.classList.add('active');
+            
             currentActiveIframeId = targetId;
 
-            // Automatically close the menu on mobile after a selection is made
             if (window.innerWidth <= 900) {
                 toggleMobileMenu();
             }
         }
 
         // --- TIMER AND REFRESH LOGIC ---
-        const REFRESH_INTERVAL = 30 * 60; // 30 minutes
+        const REFRESH_INTERVAL = 12 * 60 * 60; // 12 hours
         let timeLeft = REFRESH_INTERVAL;
         let timerId;
         
         let isPaused = localStorage.getItem('dashboardPaused') === 'true'; 
 
         function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
             const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
-            return `${minutes}:${remainingSeconds}`;
+            return `${hours}:${minutes}:${remainingSeconds}`;
         }
 
         function updateDisplay() {
@@ -416,14 +648,18 @@
 
         function renderPauseButtonState() {
             const btn = document.getElementById('pause-btn');
+            const icon = document.getElementById('pause-icon');
+            const text = document.getElementById('pause-text');
             const timerUI = document.getElementById('timer-ui');
 
             if (isPaused) {
-                btn.innerText = "▶ Resume";
+                icon.innerText = "play_arrow";
+                text.innerText = "Resume";
                 btn.classList.add("is-paused");
                 timerUI.style.opacity = "0.4"; 
             } else {
-                btn.innerText = "⏸ Pause";
+                icon.innerText = "pause";
+                text.innerText = "Pause";
                 btn.classList.remove("is-paused");
                 timerUI.style.opacity = "1"; 
             }
@@ -436,26 +672,25 @@
         }
 
         function triggerManualRefresh() {
-            const button = document.querySelector('.btn-refresh');
+            const button = document.getElementById('refresh-btn');
+            
             reloadActiveIframe();
             
             timeLeft = REFRESH_INTERVAL;
             updateDisplay();
 
-            button.innerText = "Refreshing...";
-            button.style.backgroundColor = "#6b7280"; 
+            button.classList.add('animating');
             
             setTimeout(() => {
-                button.innerText = "↻ Refresh";
-                button.style.backgroundColor = ""; 
-            }, 2000);
+                button.classList.remove('animating');
+            }, 1500); 
         }
 
         // --- ON PAGE LOAD ---
         window.onload = () => {
+            initializeApp();          
             renderPauseButtonState(); 
             updateDisplay();          
-            startTimer();             
         };
     </script>
 
