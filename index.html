@@ -15,7 +15,7 @@
             overflow: hidden;
         }
 
-        /* Sidebar styling (Desktop Default) */
+        /* Sidebar styling */
         .sidebar {
             width: 260px;
             background-color: #1f2937;
@@ -63,6 +63,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap; /* Allows wrapping on smaller screens */
+            gap: 15px;
         }
         .top-bar h1 {
             margin: 0;
@@ -74,7 +76,8 @@
         .controls-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap; /* Keeps buttons nice on mobile */
         }
         
         .timer-display {
@@ -85,6 +88,7 @@
             border-radius: 6px;
             font-weight: 500;
             border: 1px solid #e5e7eb;
+            transition: opacity 0.3s;
         }
         .timer-display span {
             color: #d97706;
@@ -95,24 +99,41 @@
             text-align: center;
         }
 
-        .btn-refresh {
-            background-color: #107c41;
+        /* Buttons Shared Styling */
+        button {
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 16px;
             border-radius: 6px;
             font-size: 0.95rem;
             cursor: pointer;
             font-weight: 600;
-            box-shadow: 0 2px 4px rgba(16, 124, 65, 0.2);
             transition: background-color 0.2s, transform 0.1s;
         }
-        .btn-refresh:hover {
-            background-color: #0c5e31;
-        }
-        .btn-refresh:active {
+        button:active {
             transform: scale(0.98);
         }
+
+        /* Specific Button Colors */
+        .btn-refresh {
+            background-color: #107c41; /* Excel Green */
+            box-shadow: 0 2px 4px rgba(16, 124, 65, 0.2);
+        }
+        .btn-refresh:hover { background-color: #0c5e31; }
+
+        .btn-pause {
+            background-color: #d97706; /* Amber */
+            box-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
+            width: 100px; /* Fixed width prevents jitter when text changes */
+        }
+        .btn-pause:hover { background-color: #b45309; }
+        
+        /* State when paused */
+        .btn-pause.is-paused {
+            background-color: #4b5563; /* Gray */
+            box-shadow: 0 2px 4px rgba(75, 85, 99, 0.2);
+        }
+        .btn-pause.is-paused:hover { background-color: #374151; }
 
         /* Dashboard Container */
         .dashboard-wrapper {
@@ -136,25 +157,18 @@
             border: none;
         }
 
-        /* ========================================= */
-        /* MOBILE RESPONSIVE STYLES                  */
-        /* ========================================= */
+        /* Mobile Responsive Adjustments */
         @media (max-width: 768px) {
-            body {
-                flex-direction: column; /* Stack main content and sidebar vertically */
-            }
+            body { flex-direction: column; }
             
-            /* Move Sidebar to the bottom like an App Tab Bar */
             .sidebar {
                 width: 100%;
                 flex-direction: row;
                 padding: 0;
-                order: 2; /* Puts it at the bottom */
+                order: 2;
                 box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             }
-            .sidebar h2 {
-                display: none; /* Hide the logo text on small screens */
-            }
+            .sidebar h2 { display: none; }
             .nav-item {
                 flex: 1;
                 text-align: center;
@@ -168,35 +182,22 @@
                 border-bottom: 4px solid #3b82f6;
             }
 
-            /* Adjust Main Content to fit above the new bottom bar */
             .main-content {
                 width: 100%;
-                order: 1; /* Puts it at the top */
+                order: 1;
             }
 
-            /* Stack Top Bar elements so they don't get squished */
             .top-bar {
                 flex-direction: column;
                 align-items: stretch;
                 padding: 15px;
                 gap: 15px;
             }
-            .top-bar h1 {
-                font-size: 1.2rem;
-                text-align: center;
-            }
-            .controls-container {
-                justify-content: space-between;
-                width: 100%;
-            }
+            .top-bar h1 { text-align: center; }
+            .controls-container { justify-content: center; }
 
-            /* Shrink padding to give the Excel sheet more room */
-            .dashboard-wrapper {
-                padding: 10px;
-            }
-            .card {
-                border-radius: 8px;
-            }
+            .dashboard-wrapper { padding: 10px; }
+            .card { border-radius: 8px; }
         }
     </style>
 </head>
@@ -204,11 +205,13 @@
 
     <div class="main-content">
         <div class="top-bar">
-            <h1>NMKC Literature Dashboard</h1>
+            <h1>Performance Dashboard</h1>
+            
             <div class="controls-container">
-                <div class="timer-display">
+                <div class="timer-display" id="timer-ui">
                     Auto-refresh: <span id="countdown">30</span>s
                 </div>
+                <button id="pause-btn" class="btn-pause" onclick="toggleAutoRefresh()">⏸ Pause</button>
                 <button class="btn-refresh" onclick="triggerManualRefresh()">↻ Refresh</button>
             </div>
         </div>
@@ -234,42 +237,73 @@
         const REFRESH_INTERVAL = 30; 
         let timeLeft = REFRESH_INTERVAL;
         let timerId;
+        let isPaused = false; // Tracks whether the user stopped the timer
 
+        // Reloads the actual iframe data
         function reloadIframe() {
             const iframe = document.getElementById('excel-frame');
             iframe.src = iframe.src; 
         }
 
+        // Starts the master countdown loop
         function startTimer() {
             timerId = setInterval(() => {
-                timeLeft--;
-                document.getElementById('countdown').innerText = timeLeft;
-
-                if (timeLeft <= 0) {
-                    reloadIframe();
-                    timeLeft = REFRESH_INTERVAL;
+                // Only count down if the system is NOT paused
+                if (!isPaused) {
+                    timeLeft--;
                     document.getElementById('countdown').innerText = timeLeft;
+
+                    if (timeLeft <= 0) {
+                        reloadIframe();
+                        timeLeft = REFRESH_INTERVAL;
+                        document.getElementById('countdown').innerText = timeLeft;
+                    }
                 }
             }, 1000); 
         }
 
+        // Function for the Pause/Resume button
+        function toggleAutoRefresh() {
+            isPaused = !isPaused; // Flip the state
+            
+            const btn = document.getElementById('pause-btn');
+            const timerUI = document.getElementById('timer-ui');
+
+            if (isPaused) {
+                // Change UI to reflect paused state
+                btn.innerText = "▶ Resume";
+                btn.classList.add("is-paused");
+                timerUI.style.opacity = "0.4"; // Dims the timer
+            } else {
+                // Change UI to reflect running state
+                btn.innerText = "⏸ Pause";
+                btn.classList.remove("is-paused");
+                timerUI.style.opacity = "1"; // Brightens the timer
+            }
+        }
+
+        // Function for the Manual Refresh button
         function triggerManualRefresh() {
             const button = document.querySelector('.btn-refresh');
             
+            // Reload the data immediately
             reloadIframe();
 
+            // Always reset the clock back to 30, even if currently paused
             timeLeft = REFRESH_INTERVAL;
             document.getElementById('countdown').innerText = timeLeft;
 
+            // Visual feedback for the button click
             button.innerText = "Refreshing...";
             button.style.backgroundColor = "#6b7280"; 
             
             setTimeout(() => {
                 button.innerText = "↻ Refresh";
-                button.style.backgroundColor = "#107c41";
+                button.style.backgroundColor = ""; // Resets to CSS default
             }, 2000);
         }
 
+        // Start the background timer loop on page load
         window.onload = startTimer;
     </script>
 
