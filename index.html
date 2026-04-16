@@ -3,26 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#0f1420">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>Navi Mumbai Kalamboli Congregation Dashboard</title>
     
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,100,0,0" />
     
     <style>
         :root {
-            --bg-color: #f3f4f6;
-            --sidebar-bg: #111827;
-            --sidebar-hover: #1f2937;
-            --accent: #3b82f6;
-            --text-main: #111827;
-            --text-muted: #6b7280;
-            --card-bg: #ffffff;
-            --success: #107c41; 
-            /* Premium easing curve */
-            --ease-apple: cubic-bezier(0.25, 1, 0.5, 1);
+            /* Midnight Forge Palette */
+            --bg-pure: #000000;
+            --bg-surface: #0a0a0c;
+            --bg-elevated: #121214;
+            --accent: #38bdf8; /* Clinical Cyan */
+            --accent-dim: rgba(56, 189, 248, 0.15);
+            --text-high: #f8fafc;
+            --text-med: #94a3b8;
+            --text-low: #475569;
+            --border-subtle: #1e293b;
+            --border-glow: rgba(56, 189, 248, 0.3);
+            
+            --ease-tech: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         * {
@@ -32,484 +39,234 @@
 
         body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-pure);
+            /* High-End Micro-Grid Pattern */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 32px 32px;
+            background-position: center top;
             display: flex;
-            
-            /* Safari specific viewport fixes */
-            height: 100vh; 
-            height: 100dvh; 
-            min-height: -webkit-fill-available;
-            
-            overflow: hidden;
-            overscroll-behavior-y: none; 
+            height: 100vh; height: 100dvh; min-height: -webkit-fill-available;
+            overflow: hidden; overscroll-behavior-y: none; 
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
 
-        .material-symbols-rounded {
-            font-size: 20px;
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+        .material-symbols-rounded { font-size: 20px; }
+        .tech-font { font-family: 'JetBrains Mono', monospace; }
+
+        ::-webkit-scrollbar { width: 2px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-subtle); }
 
         /* ========================================= */
-        /* --- PREMIUM SPLASH SCREEN ---             */
+        /* --- TERMINAL BOOT SPLASH SCREEN ---       */
         /* ========================================= */
         #splash-screen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            background-color: #0f1420; 
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s var(--ease-apple), visibility 0.8s;
-            padding: 20px;
-            text-align: center;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            background-color: var(--bg-pure); z-index: 9999; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1.2s var(--ease-tech), visibility 1.2s;
         }
 
-        .splash-logo {
-            font-size: 72px;
-            color: var(--accent);
-            margin-bottom: 24px;
-            opacity: 0;
-            transform: scale(0.8);
-            animation: premiumPopIn 1s var(--ease-apple) forwards, floatLogo 4s ease-in-out infinite 1s;
+        .splash-brand {
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
+        }
+
+        .splash-icon {
+            font-size: 48px; color: var(--text-high); font-weight: 100; opacity: 0;
+            animation: fadeUp 1s var(--ease-out-expo) forwards;
         }
 
         .splash-title {
-            color: white;
-            font-size: 1.5rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin: 0;
-            opacity: 0;
-            max-width: 95%;
-            line-height: 1.4;
-            transform: translateY(20px);
-            animation: slideUpFade 1s var(--ease-apple) forwards 0.2s; 
+            color: var(--text-high); font-size: 0.85rem; letter-spacing: 6px; text-transform: uppercase;
+            font-weight: 400; margin: 0; opacity: 0;
+            animation: fadeUp 1s var(--ease-out-expo) forwards 0.2s;
         }
 
-        .splash-subtitle {
-            color: #9ca3af;
-            font-size: 0.95rem;
-            margin-top: 10px;
-            letter-spacing: 1px;
-            opacity: 0;
-            transform: translateY(15px);
-            animation: slideUpFade 1s var(--ease-apple) forwards 0.4s;
+        .splash-status {
+            color: var(--accent); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
+            margin-top: 32px; opacity: 0;
+            animation: fadeUp 1s var(--ease-out-expo) forwards 0.4s;
         }
 
-        .loader-container {
-            width: 220px;
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            margin-top: 40px;
-            overflow: hidden;
-            opacity: 0;
-            animation: slideUpFade 1s var(--ease-apple) forwards 0.6s;
+        /* Precision Data Loader */
+        .tech-loader {
+            width: 1px; height: 24px; background-color: var(--border-subtle);
+            margin-top: 24px; position: relative; opacity: 0; overflow: hidden;
+            animation: fadeUp 1s var(--ease-out-expo) forwards 0.5s;
+        }
+        .tech-loader::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 30%;
+            background-color: var(--accent); box-shadow: 0 0 10px var(--accent);
+            animation: scanLine 1.5s linear infinite;
         }
 
-        .loader-bar {
-            height: 100%;
-            width: 0;
-            background-color: var(--accent);
-            border-radius: 4px;
-            animation: loadBar 2.5s var(--ease-apple) forwards 0.8s;
-        }
-
-        @keyframes premiumPopIn {
-            to { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4)); }
-        }
-        @keyframes floatLogo {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.6)); }
-        }
-        @keyframes slideUpFade {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes loadBar {
-            0% { width: 0; }
-            30% { width: 40%; }
-            70% { width: 80%; }
-            100% { width: 100%; }
-        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scanLine { 0% { top: -30%; } 100% { top: 100%; } }
 
         /* ========================================= */
         /* --- SIDEBAR & NAVIGATION ---              */
         /* ========================================= */
         .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            height: 100vh;
-            height: 100dvh;
-            background-color: rgba(0, 0, 0, 0.4);
-            z-index: 90;
-            /* Safari premium blur */
-            -webkit-backdrop-filter: blur(8px);
-            backdrop-filter: blur(8px);
-            opacity: 0;
-            transition: opacity 0.4s var(--ease-apple);
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; height: 100dvh;
+            background-color: rgba(0, 0, 0, 0.8); z-index: 90;
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            opacity: 0; transition: opacity 0.4s var(--ease-tech);
         }
-
-        .sidebar-overlay.mobile-open {
-            display: block;
-            opacity: 1;
-        }
+        .sidebar-overlay.mobile-open { display: block; opacity: 1; }
 
         .sidebar {
-            width: 280px; 
-            height: 100vh;
-            height: 100dvh;
-            background-color: var(--sidebar-bg);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-            overflow-y: auto; 
-            transition: transform 0.4s var(--ease-apple);
-            -webkit-overflow-scrolling: touch;
+            width: 280px; height: 100dvh; background-color: rgba(0,0,0,0.4); color: var(--text-high);
+            display: flex; flex-direction: column; z-index: 100;
+            border-right: 1px solid var(--border-subtle); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            transition: transform 0.5s var(--ease-tech); -webkit-overflow-scrolling: touch;
         }
         
-        .sidebar-header {
-            padding: 24px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 10px;
-        }
+        .sidebar-header { padding: 32px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
 
-        .sidebar-header-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar h2 {
-            margin: 0;
-            font-size: 1.05rem; 
-            color: var(--accent);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            line-height: 1.4;
-        }
+        .sidebar-header-title { display: flex; flex-direction: column; gap: 8px; }
+        .sidebar-header-title .material-symbols-rounded { font-size: 24px; color: var(--text-high); }
+        .sidebar h2 { margin: 0; font-size: 0.75rem; color: var(--text-med); letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
+        .sidebar h3 { margin: 0; font-size: 0.9rem; color: var(--text-high); font-weight: 400; }
 
         .close-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: #9ca3af;
-            cursor: pointer;
-            padding: 12px; 
-            margin: -12px;
-            transition: color 0.2s, transform 0.2s;
+            display: none; background: none; border: none; color: var(--text-med); cursor: pointer;
+            padding: 8px; margin: -8px; transition: color 0.2s;
         }
-        .close-menu-btn:active { transform: scale(0.9); }
+        .close-menu-btn:active { color: var(--text-high); }
 
         .nav-group {
-            padding: 20px 24px 8px 24px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #9ca3af;
-            letter-spacing: 1.5px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            padding: 24px 24px 8px 24px; font-size: 0.65rem; text-transform: uppercase; color: var(--text-low);
+            letter-spacing: 2px; font-weight: 600;
         }
         
         .nav-item {
-            padding: 14px 24px 14px 34px; 
-            color: #d1d5db;
-            text-decoration: none;
-            border-left: 4px solid transparent;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-            cursor: pointer;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-            position: relative;
-            overflow: hidden;
+            padding: 10px 24px; color: var(--text-med); text-decoration: none; 
+            transition: all 0.2s var(--ease-tech); cursor: pointer; font-weight: 400;
+            display: flex; align-items: center; gap: 12px; font-size: 0.85rem; position: relative;
+            border-left: 2px solid transparent; margin: 4px 0;
         }
         
-        @media (hover: hover) {
-            .nav-item:hover {
-                background-color: rgba(255,255,255,0.05);
-                color: white;
-            }
-        }
-
-        .nav-item:active { background-color: rgba(255,255,255,0.1); }
+        @media (hover: hover) { .nav-item:hover { color: var(--text-high); background-color: rgba(255,255,255,0.02); } }
 
         .nav-item.active {
-            background-color: var(--sidebar-hover);
-            border-left: 4px solid var(--accent);
-            color: var(--accent);
+            color: var(--text-high); border-left-color: var(--accent);
+            background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%);
         }
         .nav-item.active .material-symbols-rounded { color: var(--accent); }
 
         .sidebar-footer {
-            margin-top: auto; 
-            padding: 24px 20px;
-            font-size: 0.75rem;
-            color: #6b7280;
-            line-height: 1.6;
-            text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            background-color: rgba(0,0,0,0.2); 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            margin-top: auto; padding: 24px; font-size: 0.65rem; color: var(--text-low); line-height: 1.6;
+            border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px;
             padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); 
         }
+        .sidebar-footer strong { color: var(--text-med); font-weight: 500; letter-spacing: 0.5px; }
 
         /* ========================================= */
         /* --- MAIN DASHBOARD CONTENT ---            */
         /* ========================================= */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            width: calc(100% - 280px);
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            position: relative;
-        }
+        .main-content { flex: 1; display: flex; flex-direction: column; width: calc(100% - 280px); height: 100dvh; position: relative; }
 
-        .top-bar {
-            background-color: var(--card-bg);
-            padding: 16px 32px;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            gap: 15px;
-            z-index: 10;
+        .top-bar { 
+            padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; z-index: 10; 
         }
         
-        .open-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-main);
-            padding: 12px; 
-            margin-left: -12px;
-            margin-right: 8px;
-            border-radius: 50%;
-            transition: background-color 0.2s;
-        }
-        .open-menu-btn:active { background-color: #f3f4f6; }
+        .open-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--text-high); padding: 8px; margin-left: -8px; margin-right: 12px; }
 
-        .title-wrapper {
-            display: flex;
-            align-items: center;
+        .title-wrapper { display: flex; align-items: center; }
+        .top-bar h1 { margin: 0; font-size: 1.1rem; color: var(--text-high); font-weight: 300; letter-spacing: 0.5px; }
+
+        /* Tech/Ghost Button */
+        button.action-btn { 
+            color: var(--text-high); background: transparent; 
+            border: 1px solid var(--border-subtle); padding: 8px 16px; border-radius: 4px; 
+            font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s var(--ease-tech); 
+        }
+        button.action-btn:hover { 
+            border-color: var(--text-med); background: rgba(255,255,255,0.02);
+        }
+        button.action-btn:active { transform: scale(0.97); }
+        
+        .action-btn.animating .material-symbols-rounded { animation: syncSpin 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* --- ARCHITECTURAL IFRAME CONTAINER --- */
+        .dashboard-wrapper { flex: 1; padding: 0 40px 40px 40px; position: relative; }
+        
+        .card { 
+            background-color: var(--bg-surface); border-radius: 8px; 
+            border: 1px solid var(--border-subtle); box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; 
+            -webkit-overflow-scrolling: touch; overflow: hidden;
         }
 
-        .top-bar h1 {
-            margin: 0;
-            font-size: 1.3rem;
-            color: var(--text-main);
-            font-weight: 600;
-            letter-spacing: -0.5px;
+        /* Laser Line Loader (Top of Card) */
+        .card-laser-loader {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px; z-index: 10;
+            background-color: transparent; overflow: hidden; opacity: 0; transition: opacity 0.3s;
         }
-
-        .controls-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+        .card-laser-loader.active { opacity: 1; }
+        .card-laser-loader::after {
+            content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 30%;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: sweepBar 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
         
-        .timer-display {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            background-color: var(--bg-color);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            border: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* Inner Overlay Loader */
+        .card-overlay {
+            position: absolute; inset: 0; background-color: var(--bg-surface);
+            display: flex; justify-content: center; align-items: center; z-index: 5; 
+            opacity: 0; pointer-events: none; transition: opacity 0.5s var(--ease-tech);
         }
-        
-        .timer-display span {
-            color: #d97706;
-            font-variant-numeric: tabular-nums;
-            display: inline-block;
-            width: 65px; 
-            text-align: center;
-        }
+        .card-overlay.active { opacity: 1; pointer-events: all; }
+        .card-overlay-text { color: var(--text-med); font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; animation: pulseOp 2s infinite; }
 
-        button.action-btn {
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: transform 0.2s var(--ease-apple), background-color 0.2s, box-shadow 0.2s;
-        }
-        button.action-btn:active { transform: scale(0.94); }
+        @keyframes pulseOp { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .btn-refresh {
-            background-color: var(--success);
-            box-shadow: 0 4px 10px rgba(16, 124, 65, 0.2);
-        }
-        .btn-refresh.animating {
-            animation: syncSpin 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes syncSpin {
-            100% { transform: rotate(360deg); }
-        }
-
-        .btn-pause {
-            background-color: #d97706;
-            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
-            width: 105px;
-            justify-content: center;
-        }
-        .btn-pause.is-paused { background-color: #4b5563; box-shadow: none; }
-
-        /* --- PREMIUM IFRAME CONTAINER --- */
-        .dashboard-wrapper {
-            flex: 1;
-            padding: 24px 32px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            
-            /* Crucial iOS Safari Fixes for Iframes */
-            -webkit-overflow-scrolling: touch; 
-            overflow-y: auto; 
-            overflow-x: hidden;
-        }
-        
-        .iframe-view {
-            width: 100%;
-            height: 100%;
-            min-height: 100%;
-            border: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            pointer-events: none;
-            background-color: white; 
-            transform: scale(0.98) translateY(15px);
-            transition: opacity 0.5s var(--ease-apple), transform 0.5s var(--ease-apple);
-        }
-        
-        .iframe-view.active {
-            opacity: 1;
-            pointer-events: auto;
-            z-index: 2;
-            transform: scale(1) translateY(0); 
-        }
+        .iframe-view { width: 100%; height: 100%; min-height: 100%; border: none; z-index: 2; background-color: var(--bg-surface); }
 
         /* ========================================= */
         /* --- MOBILE SAFARI OPTIMIZATIONS ---       */
         /* ========================================= */
         @media (max-width: 900px) {
-            .sidebar {
-                position: fixed;
-                top: 0; left: 0;
-                transform: translateX(-100%); 
-            }
+            body { background-size: 16px 16px; }
+            .sidebar { position: fixed; top: 0; left: 0; transform: translateX(-100%); background-color: var(--bg-pure); }
             .sidebar.mobile-open { transform: translateX(0); }
             .close-menu-btn { display: block; }
             .main-content { width: 100%; }
             .open-menu-btn { display: block; }
             
-            .top-bar {
-                padding: 12px 16px;
-                padding-top: calc(12px + env(safe-area-inset-top, 0px)); /* iPhone Notch Fix */
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .title-wrapper {
-                justify-content: flex-start;
-                margin-bottom: 12px;
-                padding-bottom: 12px;
-                border-bottom: 1px solid #e5e7eb;
-            }
-            .top-bar h1 { font-size: 1.2rem; }
+            .top-bar { padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top, 0px)); flex-direction: column; align-items: stretch; border-bottom: 1px solid var(--border-subtle); }
+            .title-wrapper { justify-content: flex-start; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+            .top-bar h1 { font-size: 1rem; }
+            .controls-container { justify-content: flex-end; }
             
-            .controls-container { 
-                justify-content: space-between; 
-                gap: 8px; 
-            }
+            .dashboard-wrapper { padding: 16px 20px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+            .card { border-radius: 6px; }
             
-            .dashboard-wrapper { 
-                padding: 12px; 
-                padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* iPhone Home Bar Fix */
-            }
-            
-            .card { border-radius: 12px; }
-            button.action-btn { padding: 10px 14px; font-size: 0.85rem; }
-            .btn-pause { width: 100px; }
-            
-            /* Staggered Sidebar Animation on Mobile */
-            .sidebar.mobile-open .nav-item, 
-            .sidebar.mobile-open .nav-group {
-                animation: slideInRight 0.4s var(--ease-apple) forwards;
-                opacity: 0;
-                transform: translateX(-20px);
-            }
+            .sidebar.mobile-open .nav-item, .sidebar.mobile-open .nav-group { animation: slideInRight 0.5s var(--ease-tech) forwards; opacity: 0; transform: translateX(-10px); }
             .sidebar.mobile-open .nav-group:nth-child(1) { animation-delay: 0.1s; }
             .sidebar.mobile-open .nav-item:nth-child(2) { animation-delay: 0.15s; }
             .sidebar.mobile-open .nav-item:nth-child(3) { animation-delay: 0.2s; }
             .sidebar.mobile-open .nav-item:nth-child(4) { animation-delay: 0.25s; }
             .sidebar.mobile-open .nav-group:nth-child(5) { animation-delay: 0.3s; }
             .sidebar.mobile-open .nav-item:nth-child(6) { animation-delay: 0.35s; }
-            
-            @keyframes slideInRight {
-                to { opacity: 1; transform: translateX(0); }
-            }
+            @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
         }
     </style>
 </head>
 <body>
 
     <div id="splash-screen">
-        <span class="material-symbols-rounded splash-logo">dashboard</span>
-        <h1 class="splash-title">Navi Mumbai Kalamboli<br>Congregation</h1>
-        <p class="splash-subtitle">Initializing Data Hub...</p>
-        
-        <div class="loader-container">
-            <div class="loader-bar"></div>
+        <div class="splash-brand">
+            <span class="material-symbols-rounded splash-icon">account_tree</span>
+            <h1 class="splash-title">Navi Mumbai Kalamboli<span style="color: var(--text-low)">.SYS</span></h1>
         </div>
+        <div class="tech-loader"></div>
+        <p class="splash-status tech-font" id="boot-status">ESTABLISHING SECURE PROTOCOL...</p>
     </div>
-
 
     <div class="sidebar-overlay" id="menu-overlay" onclick="toggleMobileMenu()"></div>
 
@@ -517,215 +274,140 @@
         <div>
             <div class="sidebar-header">
                 <div class="sidebar-header-title">
-                    <span class="material-symbols-rounded">dashboard</span>
-                    <h2>Navi Mumbai Kalamboli<br>Congregation</h2>
+                    <span class="material-symbols-rounded">account_tree</span>
+                    <div>
+                        <h2>Data Terminal</h2>
+                        <h3>Navi Mumbai Kalamboli Congregation</h3>
+                    </div>
                 </div>
                 <button class="close-menu-btn" onclick="toggleMobileMenu()">
                     <span class="material-symbols-rounded">close</span>
                 </button>
             </div>
 
-            <div class="nav-group">
-                <span class="material-symbols-rounded" style="font-size: 16px;">folder_open</span>
-                Kalamboli
-            </div>
+            <div class="nav-group">Kalamboli Congregation</div>
             <div class="nav-item active" onclick="switchTab('kalamboli-hindi', 'Kalamboli Literature - Hindi', this)">
-                <span class="material-symbols-rounded">description</span> Hindi
+                <span class="material-symbols-rounded">segment</span> Hindi
             </div>
             <div class="nav-item" onclick="switchTab('kalamboli-english', 'Kalamboli Literature - English', this)">
-                <span class="material-symbols-rounded">description</span> English
+                <span class="material-symbols-rounded">segment</span> English
             </div>
             <div class="nav-item" onclick="switchTab('kalamboli-marathi', 'Kalamboli Literature - Marathi', this)">
-                <span class="material-symbols-rounded">description</span> Marathi
+                <span class="material-symbols-rounded">segment</span> Marathi
             </div>
 
-            <div class="nav-group" style="margin-top: 15px;">
-                <span class="material-symbols-rounded" style="font-size: 16px;">folder_open</span>
-                Language Group
-            </div>
+            <div class="nav-group" style="margin-top: 15px;">Language Group</div>
             <div class="nav-item" onclick="switchTab('language-hindi', 'Language Congregation - Hindi', this)">
-                <span class="material-symbols-rounded">description</span> Hindi
+                <span class="material-symbols-rounded">segment</span> Hindi
             </div>
         </div>
         
         <div class="sidebar-footer">
-            <span class="material-symbols-rounded" style="font-size: 18px; color: var(--accent);">support_agent</span>
-            <span>This page is owned and maintained by Br. Ravikumar. You can contact the page owner to report issues.</span>
+            <span class="material-symbols-rounded" style="font-size: 16px;">verified_user</span>
+            <span>DATA TERMINAL OWNER<br><strong class="tech-font">BR_RAVIKUMAR_ADMIN</strong></span>
         </div>
     </div>
 
     <div class="main-content">
         <div class="top-bar">
-            
             <div class="title-wrapper">
-                <button class="open-menu-btn" onclick="toggleMobileMenu()">
-                    <span class="material-symbols-rounded">menu</span>
-                </button>
+                <button class="open-menu-btn" onclick="toggleMobileMenu()"><span class="material-symbols-rounded">menu</span></button>
                 <h1 id="dashboard-title">Kalamboli Literature - Hindi</h1>
             </div>
-            
             <div class="controls-container">
-                <div class="timer-display" id="timer-ui">
-                    <span class="material-symbols-rounded" style="font-size: 18px;">schedule</span>
-                    Refresh in: <span id="countdown">12:00:00</span>
-                </div>
-                <button id="pause-btn" class="action-btn btn-pause" onclick="toggleAutoRefresh()">
-                    <span class="material-symbols-rounded" id="pause-icon">pause</span> <span id="pause-text">Pause</span>
-                </button>
-                <button class="action-btn btn-refresh" id="refresh-btn" onclick="triggerManualRefresh()">
-                    <span class="material-symbols-rounded" id="refresh-icon">sync</span> Refresh
+                <button class="action-btn" id="refresh-btn" onclick="triggerManualRefresh()">
+                    <span class="material-symbols-rounded" id="refresh-icon">sync</span> Refresh Server
                 </button>
             </div>
-
         </div>
 
         <div class="dashboard-wrapper">
             <div class="card">
-                <iframe id="kalamboli-hindi" class="iframe-view active" scrolling="yes" src="https://1drv.ms/x/c/196756A31661DF84/IQTfOsh-TtpYR6r76UetTjpDAUOqOkQwkWBP6oWClJAxLyY?em=2&wdAllowInteractivity=True&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True"></iframe>
-                <iframe id="kalamboli-english" class="iframe-view" src="https://1drv.ms/x/c/196756A31661DF84/IQQN1FGpxPT8QKFYTXsvY6L9AfQ4S1Ptqqn9pwydt69tudY?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True"></iframe>
-                <iframe id="kalamboli-marathi" class="iframe-view" src="https://1drv.ms/x/c/196756A31661DF84/IQR0m8GjjoJyTq90pV7nT1j9AcQKYPdKSY4Iftmjq9lrKN4?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True"></iframe>
-                <iframe id="language-hindi" class="iframe-view" src="https://1drv.ms/x/c/196756A31661DF84/IQRyPzOnEG8YQaT-N64JE-X1AbSfNLxAf_khTofkSC3XCqQ?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True"></iframe>
+                <div class="card-laser-loader" id="laser-loader"></div>
+                
+                <div class="card-overlay" id="frame-loader">
+                    <span class="card-overlay-text tech-font">AWAITING CONNECTION...</span>
+                </div>
+                
+                <iframe id="main-frame" class="iframe-view" scrolling="yes" onload="hideLoader()"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // --- SPLASH SCREEN LAUNCH LOGIC ---
+        const dashboardUrls = {
+            'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQTfOsh-TtpYR6r76UetTjpDAUOqOkQwkWBP6oWClJAxLyY?em=2&wdAllowInteractivity=True&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True",
+            'kalamboli-english': "https://1drv.ms/x/c/196756A31661DF84/IQQN1FGpxPT8QKFYTXsvY6L9AfQ4S1Ptqqn9pwydt69tudY?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True", 
+            'kalamboli-marathi': "https://1drv.ms/x/c/196756A31661DF84/IQR0m8GjjoJyTq90pV7nT1j9AcQKYPdKSY4Iftmjq9lrKN4?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
+            'language-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQRyPzOnEG8YQaT-N64JE-X1AbSfNLxAf_khTofkSC3XCqQ?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True"
+        };
+
+        let currentActiveKey = 'kalamboli-hindi';
+
+        function hideLoader() {
+            setTimeout(() => {
+                document.getElementById('frame-loader').classList.remove('active');
+                document.getElementById('laser-loader').classList.remove('active');
+            }, 400); 
+        }
+
         function initializeApp() {
+            const statusText = document.getElementById('boot-status');
+            
+            // Terminal boot sequence simulation
+            setTimeout(() => { statusText.innerText = "FETCHING ASSETS..."; }, 1000);
+            setTimeout(() => { statusText.innerText = "MOUNTING DATABASES..."; }, 1800);
+            
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 splash.style.opacity = '0';
                 splash.style.visibility = 'hidden';
-                
-                // Switch iOS status bar theme to match app background
-                setTimeout(() => {
-                    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff');
-                }, 800);
 
-                startTimer();
-            }, 3000); // Slightly longer for the premium animation to finish
+                document.getElementById('main-frame').src = dashboardUrls[currentActiveKey];
+                document.getElementById('frame-loader').classList.add('active');
+                document.getElementById('laser-loader').classList.add('active');
+
+            }, 2800); 
         }
 
-        // --- MOBILE MENU LOGIC ---
         function toggleMobileMenu() {
             document.getElementById('app-sidebar').classList.toggle('mobile-open');
             document.getElementById('menu-overlay').classList.toggle('mobile-open');
         }
 
-        // --- PREMIUM TAB SWITCHING ---
-        let currentActiveIframeId = 'kalamboli-hindi'; 
-
-        function switchTab(targetId, newTitle, clickedElement) {
-            if (currentActiveIframeId === targetId) return;
+        function switchTab(targetKey, newTitle, clickedElement) {
+            if (currentActiveKey === targetKey) return;
 
             document.getElementById('dashboard-title').innerText = newTitle;
             
-            // Remove active states
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.querySelectorAll('.iframe-view').forEach(iframe => iframe.classList.remove('active'));
-            
-            // Add new active states
             clickedElement.classList.add('active');
             
-            // Re-trigger the CSS scale/fade animation
-            const targetIframe = document.getElementById(targetId);
-            void targetIframe.offsetWidth; // Force DOM reflow
-            targetIframe.classList.add('active');
-            
-            currentActiveIframeId = targetId;
+            currentActiveKey = targetKey;
+            document.getElementById('frame-loader').classList.add('active');
+            document.getElementById('laser-loader').classList.add('active');
+            document.getElementById('main-frame').src = dashboardUrls[targetKey];
 
             if (window.innerWidth <= 900) {
-                // Add a tiny delay before closing the menu for a smoother feel
-                setTimeout(() => {
-                    toggleMobileMenu();
-                }, 150);
+                setTimeout(() => { toggleMobileMenu(); }, 150);
             }
-        }
-
-        // --- TIMER AND REFRESH LOGIC ---
-        const REFRESH_INTERVAL = 12 * 60 * 60; // 12 hours
-        let timeLeft = REFRESH_INTERVAL;
-        let timerId;
-        
-        let isPaused = localStorage.getItem('dashboardPaused') === 'true'; 
-
-        function formatTime(seconds) {
-            const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
-            const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-            const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
-            return `${hours}:${minutes}:${remainingSeconds}`;
-        }
-
-        function updateDisplay() {
-            document.getElementById('countdown').innerText = formatTime(timeLeft);
-        }
-
-        function reloadActiveIframe() {
-            const activeIframe = document.getElementById(currentActiveIframeId);
-            activeIframe.src = activeIframe.src; 
-        }
-
-        function startTimer() {
-            timerId = setInterval(() => {
-                if (!isPaused) {
-                    timeLeft--;
-                    updateDisplay();
-                    
-                    if (timeLeft <= 0) {
-                        reloadActiveIframe();
-                        timeLeft = REFRESH_INTERVAL;
-                        updateDisplay();
-                    }
-                }
-            }, 1000); 
-        }
-
-        function renderPauseButtonState() {
-            const btn = document.getElementById('pause-btn');
-            const icon = document.getElementById('pause-icon');
-            const text = document.getElementById('pause-text');
-            const timerUI = document.getElementById('timer-ui');
-
-            if (isPaused) {
-                icon.innerText = "play_arrow";
-                text.innerText = "Resume";
-                btn.classList.add("is-paused");
-                timerUI.style.opacity = "0.4"; 
-            } else {
-                icon.innerText = "pause";
-                text.innerText = "Pause";
-                btn.classList.remove("is-paused");
-                timerUI.style.opacity = "1"; 
-            }
-        }
-
-        function toggleAutoRefresh() {
-            isPaused = !isPaused; 
-            localStorage.setItem('dashboardPaused', isPaused);
-            renderPauseButtonState();
         }
 
         function triggerManualRefresh() {
-            const icon = document.getElementById('refresh-icon');
+            const btn = document.getElementById('refresh-btn');
             
-            reloadActiveIframe();
+            document.getElementById('frame-loader').classList.add('active');
+            document.getElementById('laser-loader').classList.add('active');
             
-            timeLeft = REFRESH_INTERVAL;
-            updateDisplay();
+            const iframe = document.getElementById('main-frame');
+            iframe.src = iframe.src; 
 
-            // Trigger the spin animation
-            icon.classList.add('animating');
-            
-            setTimeout(() => {
-                icon.classList.remove('animating');
-            }, 1000); 
+            btn.classList.add('animating');
+            setTimeout(() => { btn.classList.remove('animating'); }, 1000); 
         }
 
-        // --- ON PAGE LOAD ---
         window.onload = () => {
             initializeApp();          
-            renderPauseButtonState(); 
-            updateDisplay();          
         };
     </script>
 
