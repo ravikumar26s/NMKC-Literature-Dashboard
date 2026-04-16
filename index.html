@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#090c15">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
@@ -13,19 +13,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,100,0,0" />
-    
+
+
     <style>
         :root {
-            /* Midnight Forge Palette */
-            --bg-pure: #000000;
-            --bg-surface: #0a0a0c;
-            --bg-elevated: #121214;
+            /* Enterprise Titanium Slate Palette */
+            --bg-pure: #090c15; /* Deep, luxurious slate-navy */
+            --bg-surface: #101421; /* Slightly elevated card background */
+            --bg-elevated: #181d2e; /* Hover states */
             --accent: #38bdf8; /* Clinical Cyan */
             --accent-dim: rgba(56, 189, 248, 0.15);
             --text-high: #f8fafc;
             --text-med: #94a3b8;
-            --text-low: #475569;
-            --border-subtle: #1e293b;
+            --text-low: #64748b;
+            --border-subtle: #1e2538; /* Soft, premium border */
             --border-glow: rgba(56, 189, 248, 0.3);
             
             --ease-tech: cubic-bezier(0.16, 1, 0.3, 1);
@@ -111,14 +112,14 @@
         /* ========================================= */
         .sidebar-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; height: 100dvh;
-            background-color: rgba(0, 0, 0, 0.8); z-index: 90;
+            background-color: rgba(9, 12, 21, 0.8); z-index: 90;
             backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
             opacity: 0; transition: opacity 0.4s var(--ease-tech);
         }
         .sidebar-overlay.mobile-open { display: block; opacity: 1; }
 
         .sidebar {
-            width: 280px; height: 100dvh; background-color: rgba(0,0,0,0.4); color: var(--text-high);
+            width: 280px; height: 100dvh; background-color: rgba(9, 12, 21, 0.6); color: var(--text-high);
             display: flex; flex-direction: column; z-index: 100;
             border-right: 1px solid var(--border-subtle); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             transition: transform 0.5s var(--ease-tech); -webkit-overflow-scrolling: touch;
@@ -262,7 +263,7 @@
     <div id="splash-screen">
         <div class="splash-brand">
             <span class="material-symbols-rounded splash-icon">account_tree</span>
-            <h1 class="splash-title">Navi Mumbai Kalamboli<span style="color: var(--text-low)">.SYS</span></h1>
+            <h1 class="splash-title">Navi Mumbai Kalamboli Congregation<span style="color: var(--text-low)">.SYS</span></h1>
         </div>
         <div class="tech-loader"></div>
         <p class="splash-status tech-font" id="boot-status">ESTABLISHING SECURE PROTOCOL...</p>
@@ -336,7 +337,7 @@
 
     <script>
         const dashboardUrls = {
-            'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQTfOsh-TtpYR6r76UetTjpDAUOqOkQwkWBP6oWClJAxLyY?em=2&wdAllowInteractivity=True&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True",
+            'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQRyPzOnEG8YQaT-N64JE-X1AbSfNLxAf_khTofkSC3XCqQ?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
             'kalamboli-english': "https://1drv.ms/x/c/196756A31661DF84/IQQN1FGpxPT8QKFYTXsvY6L9AfQ4S1Ptqqn9pwydt69tudY?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True", 
             'kalamboli-marathi': "https://1drv.ms/x/c/196756A31661DF84/IQR0m8GjjoJyTq90pV7nT1j9AcQKYPdKSY4Iftmjq9lrKN4?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
             'language-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQRyPzOnEG8YQaT-N64JE-X1AbSfNLxAf_khTofkSC3XCqQ?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True"
