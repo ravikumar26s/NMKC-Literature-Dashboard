@@ -9,6 +9,9 @@
     
     <title>Navi Mumbai Kalamboli Congregation Dashboard</title>
     
+    <link rel="preconnect" href="https://1drv.ms" crossorigin>
+    <link rel="preconnect" href="https://excel.officeapps.live.com" crossorigin>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -116,7 +119,7 @@
         .sidebar-overlay.mobile-open { display: block; opacity: 1; }
 
         .sidebar {
-            width: 240px; /* REDUCED WIDTH */
+            width: 240px; 
             height: 100dvh; background-color: rgba(9, 12, 21, 0.6); color: var(--text-high);
             display: flex; flex-direction: column; z-index: 100;
             border-right: 1px solid var(--border-subtle); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -168,25 +171,26 @@
         /* ========================================= */
         .main-content { 
             flex: 1; display: flex; flex-direction: column; 
-            width: calc(100% - 240px); /* UPDATED FOR NARROWER SIDEBAR */
+            width: calc(100% - 240px); 
             height: 100dvh; position: relative; 
         }
 
         .top-bar { 
-            padding: 16px 24px; /* REDUCED PADDING */
+            padding: 16px 24px; 
             display: flex; justify-content: space-between; align-items: center; z-index: 10; 
         }
         
         .open-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--text-high); padding: 8px; margin-left: -8px; margin-right: 12px; }
 
-        .title-wrapper { display: flex; align-items: center; }
-        .top-bar h1 { margin: 0; font-size: 1.05rem; color: var(--text-high); font-weight: 300; letter-spacing: 0.5px; }
+        .title-wrapper { display: flex; align-items: center; min-width: 0; }
+        .top-bar h1 { margin: 0; font-size: 1.05rem; color: var(--text-high); font-weight: 300; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         button.action-btn { 
             color: var(--text-high); background: transparent; 
             border: 1px solid var(--border-subtle); padding: 6px 14px; border-radius: 4px; 
             font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
             display: flex; align-items: center; gap: 8px; transition: all 0.2s var(--ease-tech); 
+            flex-shrink: 0;
         }
         button.action-btn:hover { 
             border-color: var(--text-med); background: rgba(255,255,255,0.02);
@@ -197,9 +201,7 @@
 
         /* --- ARCHITECTURAL IFRAME CONTAINER --- */
         .dashboard-wrapper { 
-            flex: 1; 
-            padding: 0 24px 24px 24px; /* MAXIMIZED VIEW AREA */
-            position: relative; 
+            flex: 1; padding: 0 24px 24px 24px; position: relative; 
         }
         
         .card { 
@@ -233,7 +235,7 @@
         .iframe-view { width: 100%; height: 100%; min-height: 100%; border: none; z-index: 2; background-color: var(--bg-surface); }
 
         /* ========================================= */
-        /* --- MOBILE SAFARI OPTIMIZATIONS ---       */
+        /* --- MOBILE MAX-VIEW OPTIMIZATIONS ---     */
         /* ========================================= */
         @media (max-width: 900px) {
             body { background-size: 16px 16px; }
@@ -241,16 +243,38 @@
             .sidebar.mobile-open { transform: translateX(0); }
             .close-menu-btn { display: block; }
             .main-content { width: 100%; }
-            .open-menu-btn { display: block; }
             
-            .top-bar { padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top, 0px)); flex-direction: column; align-items: stretch; border-bottom: 1px solid var(--border-subtle); }
-            .title-wrapper { justify-content: flex-start; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-            .top-bar h1 { font-size: 1rem; }
-            .controls-container { justify-content: flex-end; }
+            /* SLIM SINGLE-ROW TOP BAR */
+            .open-menu-btn { display: block; margin-right: 4px; padding: 4px; }
+            .top-bar { 
+                padding: 8px 12px; 
+                padding-top: calc(8px + env(safe-area-inset-top, 0px)); 
+                flex-direction: row; align-items: center; border-bottom: none; 
+            }
+            .title-wrapper { flex: 1; }
+            .top-bar h1 { font-size: 0.9rem; padding-right: 10px; }
             
-            /* TIGHTEST MOBILE PADDING POSSIBLE */
-            .dashboard-wrapper { padding: 8px 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
-            .card { border-radius: 4px; }
+            /* ULTRA-COMPACT MOBILE BUTTON */
+            button.action-btn { 
+                padding: 4px 8px;       
+                font-size: 0.6rem;      
+                gap: 4px;               
+                height: 28px;           
+            }
+            button.action-btn .material-symbols-rounded { 
+                font-size: 14px;        
+            }
+            .btn-text { display: none; } 
+            
+            /* MAXIMIZED VIEW WITH SLIGHT CURVED EDGES RESTORED */
+            .dashboard-wrapper { 
+                padding: 0 10px 10px 10px; 
+                padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); 
+            }
+            .card { 
+                border-radius: 14px; 
+                border: 1px solid var(--border-subtle); 
+            }
             
             .sidebar.mobile-open .nav-item, .sidebar.mobile-open .nav-group { animation: slideInRight 0.5s var(--ease-tech) forwards; opacity: 0; transform: translateX(-10px); }
             .sidebar.mobile-open .nav-group:nth-child(1) { animation-delay: 0.1s; }
@@ -322,7 +346,8 @@
             </div>
             <div class="controls-container">
                 <button class="action-btn" id="refresh-btn" onclick="triggerManualRefresh()">
-                    <span class="material-symbols-rounded" id="refresh-icon">sync</span> Refresh Server
+                    <span class="material-symbols-rounded" id="refresh-icon">sync</span> 
+                    <span class="btn-text">Refresh Server</span>
                 </button>
             </div>
         </div>
@@ -341,6 +366,7 @@
 
     <script>
         const dashboardUrls = {
+            // wdAllowInteractivity=False is applied here for crash prevention
             'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQTfOsh-TtpYR6r76UetTjpDAR1ls-o5Fx1Lv0M-0gu0bXs?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
             'kalamboli-english': "https://1drv.ms/x/c/196756A31661DF84/IQQN1FGpxPT8QKFYTXsvY6L9AfQ4S1Ptqqn9pwydt69tudY?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True", 
             'kalamboli-marathi': "https://1drv.ms/x/c/196756A31661DF84/IQR0m8GjjoJyTq90pV7nT1j9AcQKYPdKSY4Iftmjq9lrKN4?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
@@ -367,7 +393,9 @@
                 splash.style.opacity = '0';
                 splash.style.visibility = 'hidden';
 
-                document.getElementById('main-frame').src = dashboardUrls[currentActiveKey];
+                // Initial load with cache-busting
+                let initialUrl = dashboardUrls[currentActiveKey] + "&nocache=" + new Date().getTime();
+                document.getElementById('main-frame').src = initialUrl;
                 document.getElementById('frame-loader').classList.add('active');
                 document.getElementById('laser-loader').classList.add('active');
 
@@ -390,7 +418,10 @@
             currentActiveKey = targetKey;
             document.getElementById('frame-loader').classList.add('active');
             document.getElementById('laser-loader').classList.add('active');
-            document.getElementById('main-frame').src = dashboardUrls[targetKey];
+            
+            // Tab switch with cache-busting
+            let freshUrl = dashboardUrls[targetKey] + "&nocache=" + new Date().getTime();
+            document.getElementById('main-frame').src = freshUrl;
 
             if (window.innerWidth <= 900) {
                 setTimeout(() => { toggleMobileMenu(); }, 150);
@@ -404,7 +435,11 @@
             document.getElementById('laser-loader').classList.add('active');
             
             const iframe = document.getElementById('main-frame');
-            iframe.src = iframe.src; 
+            let freshUrl = dashboardUrls[currentActiveKey];
+            
+            // CACHE BUSTER applied to manual refresh
+            freshUrl += "&nocache=" + new Date().getTime(); 
+            iframe.src = freshUrl; 
 
             btn.classList.add('animating');
             setTimeout(() => { btn.classList.remove('animating'); }, 1000); 
