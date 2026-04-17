@@ -353,20 +353,20 @@
         </div>
 
         <div class="dashboard-wrapper">
-            <div class="card">
+            <div class="card" id="dashboard-card">
                 <div class="card-laser-loader" id="laser-loader"></div>
                 <div class="card-overlay" id="frame-loader">
                     <span class="card-overlay-text tech-font">AWAITING CONNECTION...</span>
                 </div>
                 
-                <iframe id="main-frame" class="iframe-view" scrolling="yes" onload="hideLoader()"></iframe>
+                <iframe id="main-frame" class="iframe-view" scrolling="yes"></iframe>
             </div>
         </div>
     </div>
 
     <script>
         const dashboardUrls = {
-            // wdAllowInteractivity=False is applied here for crash prevention
+            // Note: wdAllowInteractivity=False is applied here for crash prevention on mobile
             'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQTfOsh-TtpYR6r76UetTjpDAR1ls-o5Fx1Lv0M-0gu0bXs?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
             'kalamboli-english': "https://1drv.ms/x/c/196756A31661DF84/IQQN1FGpxPT8QKFYTXsvY6L9AfQ4S1Ptqqn9pwydt69tudY?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True", 
             'kalamboli-marathi': "https://1drv.ms/x/c/196756A31661DF84/IQR0m8GjjoJyTq90pV7nT1j9AcQKYPdKSY4Iftmjq9lrKN4?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
@@ -393,11 +393,11 @@
                 splash.style.opacity = '0';
                 splash.style.visibility = 'hidden';
 
-                // Initial load with cache-busting
-                let initialUrl = dashboardUrls[currentActiveKey] + "&nocache=" + new Date().getTime();
-                document.getElementById('main-frame').src = initialUrl;
                 document.getElementById('frame-loader').classList.add('active');
                 document.getElementById('laser-loader').classList.add('active');
+                
+                // Initial build
+                rebuildIframe(dashboardUrls[currentActiveKey]);
 
             }, 2800); 
         }
@@ -405,6 +405,32 @@
         function toggleMobileMenu() {
             document.getElementById('app-sidebar').classList.toggle('mobile-open');
             document.getElementById('menu-overlay').classList.toggle('mobile-open');
+        }
+
+        // --- THE DOM DESTRUCTION (NUKE) FUNCTION ---
+        function rebuildIframe(targetUrl) {
+            const container = document.getElementById('dashboard-card');
+            const oldIframe = document.getElementById('main-frame');
+            
+            // 1. Erase the old iframe from memory entirely
+            if (oldIframe) {
+                oldIframe.remove();
+            }
+
+            // 2. Build a completely new iframe hardware instance
+            const newIframe = document.createElement('iframe');
+            newIframe.id = 'main-frame';
+            newIframe.className = 'iframe-view';
+            newIframe.scrolling = 'yes';
+            
+            // 3. Re-attach the hiding logic
+            newIframe.onload = hideLoader;
+            
+            // 4. Set the exact URL (No cache-busting timestamp needed with this method)
+            newIframe.src = targetUrl; 
+
+            // 5. Inject back into the DOM underneath the loaders
+            container.appendChild(newIframe);
         }
 
         function switchTab(targetKey, newTitle, clickedElement) {
@@ -416,12 +442,12 @@
             clickedElement.classList.add('active');
             
             currentActiveKey = targetKey;
+            
             document.getElementById('frame-loader').classList.add('active');
             document.getElementById('laser-loader').classList.add('active');
             
-            // Tab switch with cache-busting
-            let freshUrl = dashboardUrls[targetKey] + "&nocache=" + new Date().getTime();
-            document.getElementById('main-frame').src = freshUrl;
+            // Rebuild with new URL
+            rebuildIframe(dashboardUrls[targetKey]);
 
             if (window.innerWidth <= 900) {
                 setTimeout(() => { toggleMobileMenu(); }, 150);
@@ -434,12 +460,8 @@
             document.getElementById('frame-loader').classList.add('active');
             document.getElementById('laser-loader').classList.add('active');
             
-            const iframe = document.getElementById('main-frame');
-            let freshUrl = dashboardUrls[currentActiveKey];
-            
-            // CACHE BUSTER applied to manual refresh
-            freshUrl += "&nocache=" + new Date().getTime(); 
-            iframe.src = freshUrl; 
+            // Forcefully rebuild the exact same URL to flush the frame cache
+            rebuildIframe(dashboardUrls[currentActiveKey]);
 
             btn.classList.add('animating');
             setTimeout(() => { btn.classList.remove('animating'); }, 1000); 
