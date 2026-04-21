@@ -25,6 +25,7 @@
             --bg-elevated: #181d2e; 
             --accent: #38bdf8; 
             --accent-dim: rgba(56, 189, 248, 0.15);
+            --whatsapp-green: #25D366;
             --text-high: #f8fafc;
             --text-med: #94a3b8;
             --text-low: #64748b;
@@ -35,13 +36,21 @@
             --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
         }
 
+        /* STRICT BOX SIZING FOR MOBILE CONTAINMENT */
         * {
             -webkit-tap-highlight-color: transparent; 
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
             margin: 0;
+            padding: 0;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden; /* Prevent horizontal scroll globally */
+        }
+
+        body {
             font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg-pure);
             background-image: 
@@ -51,7 +60,7 @@
             background-position: center top;
             display: flex;
             height: 100vh; height: 100dvh; min-height: -webkit-fill-available;
-            overflow: hidden; overscroll-behavior-y: none; 
+            overscroll-behavior-y: none; 
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
 
@@ -66,43 +75,19 @@
         /* --- TERMINAL BOOT SPLASH SCREEN ---       */
         /* ========================================= */
         #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background-color: var(--bg-pure); z-index: 9999; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 1.2s var(--ease-tech), visibility 1.2s;
         }
 
-        .splash-brand {
-            display: flex; flex-direction: column; align-items: center; gap: 16px;
-        }
+        .splash-brand { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+        .splash-icon { font-size: 48px; color: var(--text-high); font-weight: 100; opacity: 0; animation: fadeUp 1s var(--ease-out-expo) forwards; }
+        .splash-title { color: var(--text-high); font-size: 0.85rem; letter-spacing: 6px; text-transform: uppercase; font-weight: 400; margin: 0; opacity: 0; animation: fadeUp 1s var(--ease-out-expo) forwards 0.2s; }
+        .splash-status { color: var(--accent); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 32px; opacity: 0; animation: fadeUp 1s var(--ease-out-expo) forwards 0.4s; }
 
-        .splash-icon {
-            font-size: 48px; color: var(--text-high); font-weight: 100; opacity: 0;
-            animation: fadeUp 1s var(--ease-out-expo) forwards;
-        }
-
-        .splash-title {
-            color: var(--text-high); font-size: 0.85rem; letter-spacing: 6px; text-transform: uppercase;
-            font-weight: 400; margin: 0; opacity: 0;
-            animation: fadeUp 1s var(--ease-out-expo) forwards 0.2s;
-        }
-
-        .splash-status {
-            color: var(--accent); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
-            margin-top: 32px; opacity: 0;
-            animation: fadeUp 1s var(--ease-out-expo) forwards 0.4s;
-        }
-
-        .tech-loader {
-            width: 1px; height: 24px; background-color: var(--border-subtle);
-            margin-top: 24px; position: relative; opacity: 0; overflow: hidden;
-            animation: fadeUp 1s var(--ease-out-expo) forwards 0.5s;
-        }
-        .tech-loader::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 30%;
-            background-color: var(--accent); box-shadow: 0 0 10px var(--accent);
-            animation: scanLine 1.5s linear infinite;
-        }
+        .tech-loader { width: 1px; height: 24px; background-color: var(--border-subtle); margin-top: 24px; position: relative; opacity: 0; overflow: hidden; animation: fadeUp 1s var(--ease-out-expo) forwards 0.5s; }
+        .tech-loader::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 30%; background-color: var(--accent); box-shadow: 0 0 10px var(--accent); animation: scanLine 1.5s linear infinite; }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanLine { 0% { top: -30%; } 100% { top: 100%; } }
@@ -119,44 +104,34 @@
         .sidebar-overlay.mobile-open { display: block; opacity: 1; }
 
         .sidebar {
-            width: 240px; 
-            height: 100dvh; background-color: rgba(9, 12, 21, 0.6); color: var(--text-high);
-            display: flex; flex-direction: column; z-index: 100;
-            border-right: 1px solid var(--border-subtle); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            width: 240px; height: 100dvh; background-color: rgba(9, 12, 21, 0.6); color: var(--text-high);
+            display: flex; flex-direction: column; z-index: 100; border-right: 1px solid var(--border-subtle); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             transition: transform 0.5s var(--ease-tech); -webkit-overflow-scrolling: touch;
+            overflow-y: auto; overflow-x: hidden;
         }
         
         .sidebar-header { padding: 24px 20px; display: flex; justify-content: space-between; align-items: flex-start; }
-
         .sidebar-header-title { display: flex; flex-direction: column; gap: 8px; }
         .sidebar-header-title .material-symbols-rounded { font-size: 24px; color: var(--text-high); }
         .sidebar h2 { margin: 0; font-size: 0.7rem; color: var(--text-med); letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
         .sidebar h3 { margin: 0; font-size: 0.85rem; color: var(--text-high); font-weight: 400; }
 
-        .close-menu-btn {
-            display: none; background: none; border: none; color: var(--text-med); cursor: pointer;
-            padding: 8px; margin: -8px; transition: color 0.2s;
-        }
+        .close-menu-btn { display: none; background: none; border: none; color: var(--text-med); cursor: pointer; padding: 8px; margin: -8px; transition: color 0.2s; }
         .close-menu-btn:active { color: var(--text-high); }
 
-        .nav-group {
-            padding: 20px 20px 8px 20px; font-size: 0.65rem; text-transform: uppercase; color: var(--text-low);
-            letter-spacing: 2px; font-weight: 600;
-        }
+        .nav-group { padding: 20px 20px 4px 20px; font-size: 0.65rem; text-transform: uppercase; color: var(--text-low); letter-spacing: 2px; font-weight: 600; }
+        .nav-sub-group { padding: 10px 20px 4px 20px; font-size: 0.65rem; text-transform: uppercase; color: var(--text-med); letter-spacing: 1px; font-weight: 600; }
         
         .nav-item {
-            padding: 10px 20px; color: var(--text-med); text-decoration: none; 
-            transition: all 0.2s var(--ease-tech); cursor: pointer; font-weight: 400;
-            display: flex; align-items: center; gap: 12px; font-size: 0.85rem; position: relative;
-            border-left: 2px solid transparent; margin: 2px 0;
+            padding: 10px 20px; color: var(--text-med); text-decoration: none; transition: all 0.2s var(--ease-tech); 
+            cursor: pointer; font-weight: 400; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; 
+            position: relative; border-left: 2px solid transparent; margin: 2px 0;
         }
+        .nav-item.sub-item { padding-left: 36px; font-size: 0.8rem; }
         
         @media (hover: hover) { .nav-item:hover { color: var(--text-high); background-color: rgba(255,255,255,0.02); } }
-
-        .nav-item.active {
-            color: var(--text-high); border-left-color: var(--accent);
-            background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%);
-        }
+        .nav-item.active { color: var(--text-high); border-left-color: var(--accent); background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%); }
         .nav-item.active .material-symbols-rounded { color: var(--accent); }
 
         .sidebar-footer {
@@ -170,120 +145,184 @@
         /* --- MAIN DASHBOARD CONTENT ---            */
         /* ========================================= */
         .main-content { 
-            flex: 1; display: flex; flex-direction: column; 
-            width: calc(100% - 240px); 
-            height: 100dvh; position: relative; 
+            flex: 1; display: flex; flex-direction: column; width: calc(100% - 240px); height: 100dvh; position: relative; 
+            overflow-x: hidden; 
         }
-
-        .top-bar { 
-            padding: 16px 24px; 
-            display: flex; justify-content: space-between; align-items: center; z-index: 10; 
-        }
-        
+        .top-bar { padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; z-index: 10; width: 100%; }
         .open-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--text-high); padding: 8px; margin-left: -8px; margin-right: 12px; }
-
-        .title-wrapper { display: flex; align-items: center; min-width: 0; }
+        .title-wrapper { display: flex; align-items: center; min-width: 0; flex: 1; }
         .top-bar h1 { margin: 0; font-size: 1.05rem; color: var(--text-high); font-weight: 300; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         button.action-btn { 
-            color: var(--text-high); background: transparent; 
-            border: 1px solid var(--border-subtle); padding: 6px 14px; border-radius: 4px; 
-            font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
-            display: flex; align-items: center; gap: 8px; transition: all 0.2s var(--ease-tech); 
-            flex-shrink: 0;
+            color: var(--text-high); background: transparent; border: 1px solid var(--border-subtle); 
+            padding: 6px 14px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; 
+            text-transform: uppercase; display: flex; align-items: center; gap: 8px; transition: all 0.2s var(--ease-tech); flex-shrink: 0;
         }
-        button.action-btn:hover { 
-            border-color: var(--text-med); background: rgba(255,255,255,0.02);
-        }
+        button.action-btn:hover { border-color: var(--text-med); background: rgba(255,255,255,0.02); }
         button.action-btn:active { transform: scale(0.97); }
-        
         .action-btn.animating .material-symbols-rounded { animation: syncSpin 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* --- ARCHITECTURAL IFRAME CONTAINER --- */
-        .dashboard-wrapper { 
-            flex: 1; padding: 0 24px 24px 24px; position: relative; 
-        }
+        /* --- CONTAINER AREAS --- */
+        .dashboard-wrapper { flex: 1; padding: 0 24px 24px 24px; position: relative; width: 100%; overflow-x: hidden; }
         
         .card { 
-            background-color: var(--bg-surface); border-radius: 6px; 
-            border: 1px solid var(--border-subtle); box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; 
-            -webkit-overflow-scrolling: touch; overflow: hidden;
+            background-color: var(--bg-surface); border-radius: 6px; border: 1px solid var(--border-subtle); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); width: 100%; height: 100%; position: relative; 
+            -webkit-overflow-scrolling: touch; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        .card-laser-loader {
-            position: absolute; top: 0; left: 0; width: 100%; height: 2px; z-index: 10;
-            background-color: transparent; overflow: hidden; opacity: 0; transition: opacity 0.3s;
-        }
+        .card-laser-loader { position: absolute; top: 0; left: 0; width: 100%; height: 2px; z-index: 10; background-color: transparent; overflow: hidden; opacity: 0; transition: opacity 0.3s; }
         .card-laser-loader.active { opacity: 1; }
-        .card-laser-loader::after {
-            content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 30%;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            animation: sweepBar 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
+        .card-laser-loader::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 30%; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: sweepBar 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
         
-        .card-overlay {
-            position: absolute; inset: 0; background-color: var(--bg-surface);
-            display: flex; justify-content: center; align-items: center; z-index: 5; 
-            opacity: 0; pointer-events: none; transition: opacity 0.5s var(--ease-tech);
-        }
+        .card-overlay { position: absolute; inset: 0; background-color: var(--bg-surface); display: flex; justify-content: center; align-items: center; z-index: 5; opacity: 0; pointer-events: none; transition: opacity 0.5s var(--ease-tech); }
         .card-overlay.active { opacity: 1; pointer-events: all; }
         .card-overlay-text { color: var(--text-med); font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; animation: pulseOp 2s infinite; }
 
-        @keyframes pulseOp { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-
         .iframe-view { width: 100%; height: 100%; min-height: 100%; border: none; z-index: 2; background-color: var(--bg-surface); }
+
+        /* ========================================= */
+        /* --- NATIVE FORM STYLES ---                */
+        /* ========================================= */
+        #form-card { 
+            display: none; justify-content: center; align-items: flex-start; padding: 40px 24px; 
+            padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+            overflow-y: auto; -webkit-overflow-scrolling: touch; 
+            background: radial-gradient(circle at top, var(--bg-elevated) 0%, var(--bg-surface) 100%);
+            width: 100%; height: 100%; overflow-x: hidden;
+        }
+
+        .order-form {
+            width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 24px;
+            background: rgba(16, 20, 33, 0.7); padding: 36px; border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(56, 189, 248, 0.1);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            margin: auto; overflow-x: hidden;
+        }
+
+        .order-form-header { text-align: center; margin-bottom: 8px; width: 100%; }
+        .order-form-header .material-symbols-rounded { font-size: 36px; color: var(--accent); margin-bottom: 12px; filter: drop-shadow(0 0 8px var(--accent-dim)); }
+        .order-form-header h2 { margin: 0; color: var(--text-high); font-weight: 500; font-size: 1.3rem; letter-spacing: 0.5px; }
+        .order-form-header p { margin: 8px 0 0 0; color: var(--text-med); font-size: 0.85rem; }
+
+        .row-group { display: flex; gap: 16px; width: 100%; }
+        .row-group .form-group { flex: 1; min-width: 0; }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; }
+        .form-label { color: var(--text-med); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
+        
+        .form-input { 
+            background: rgba(9, 12, 21, 0.8); border: 1px solid var(--border-subtle); color: var(--text-high); 
+            padding: 14px 16px; border-radius: 8px; -webkit-border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 16px; 
+            transition: all 0.2s var(--ease-tech); width: 100%; 
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            margin: 0; min-width: 0;
+        }
+        .form-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); background: var(--bg-pure); }
+        .form-input::placeholder { color: var(--text-low); opacity: 1; }
+        
+        select.form-input { 
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
+            background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 10px auto; 
+            padding-right: 40px; cursor: pointer; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
+        }
+        
+        optgroup { background: var(--bg-pure); color: var(--text-med); font-weight: 600; font-style: normal; }
+        option { background: var(--bg-surface); color: var(--text-high); font-weight: 400; padding: 10px; }
+
+        .hidden-field { display: none; animation: slideDown 0.3s var(--ease-tech) forwards; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .recipient-toggle { display: flex; background: rgba(9, 12, 21, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden; width: 100%; }
+        .recipient-toggle input[type="radio"] { display: none; }
+        .recipient-toggle label { 
+            flex: 1; text-align: center; padding: 12px 10px; color: var(--text-med); font-size: 0.85rem; 
+            font-weight: 500; cursor: pointer; transition: all 0.2s var(--ease-tech); 
+            -webkit-tap-highlight-color: transparent; user-select: none;
+            display: flex; align-items: center; justify-content: center; word-break: break-word; line-height: 1.2;
+            min-width: 0; 
+        }
+        .recipient-toggle input[type="radio"]:checked + label { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+
+        .btn-whatsapp { 
+            background: var(--whatsapp-green); color: #fff; border: none; padding: 16px; border-radius: 8px; 
+            font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; justify-content: center; 
+            align-items: center; gap: 10px; margin-top: 8px; transition: all 0.2s var(--ease-tech); 
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2); width: 100%;
+            -webkit-appearance: none; white-space: normal; text-align: center; overflow: hidden;
+        }
+        .btn-whatsapp:hover { filter: brightness(1.05); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3); }
+        .btn-whatsapp:active { transform: translateY(1px); }
 
         /* ========================================= */
         /* --- MOBILE MAX-VIEW OPTIMIZATIONS ---     */
         /* ========================================= */
         @media (max-width: 900px) {
-            body { background-size: 16px 16px; }
+            body { background-size: 16px 16px; width: 100%; }
             .sidebar { position: fixed; top: 0; left: 0; transform: translateX(-100%); background-color: var(--bg-pure); }
             .sidebar.mobile-open { transform: translateX(0); }
             .close-menu-btn { display: block; }
             .main-content { width: 100%; }
             
-            /* SLIM SINGLE-ROW TOP BAR */
             .open-menu-btn { display: block; margin-right: 4px; padding: 4px; }
-            .top-bar { 
-                padding: 8px 12px; 
-                padding-top: calc(8px + env(safe-area-inset-top, 0px)); 
-                flex-direction: row; align-items: center; border-bottom: none; 
-            }
-            .title-wrapper { flex: 1; }
+            .top-bar { padding: 8px 12px; padding-top: calc(8px + env(safe-area-inset-top, 0px)); flex-direction: row; align-items: center; border-bottom: none; width: 100%; }
             .top-bar h1 { font-size: 0.9rem; padding-right: 10px; }
             
-            /* ULTRA-COMPACT MOBILE BUTTON */
-            button.action-btn { 
-                padding: 4px 8px;       
-                font-size: 0.6rem;      
-                gap: 4px;               
-                height: 28px;           
-            }
-            button.action-btn .material-symbols-rounded { 
-                font-size: 14px;        
-            }
+            button.action-btn { padding: 4px 8px; font-size: 0.6rem; gap: 4px; height: 28px; }
+            button.action-btn .material-symbols-rounded { font-size: 14px; }
             .btn-text { display: none; } 
             
-            /* MAXIMIZED VIEW WITH SLIGHT CURVED EDGES RESTORED */
-            .dashboard-wrapper { 
-                padding: 0 10px 10px 10px; 
-                padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); 
+            .dashboard-wrapper { padding: 0 10px 10px 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); width: 100%; }
+            .card { border-radius: 14px; border: 1px solid var(--border-subtle); width: 100%; }
+            
+            .sidebar.mobile-open .nav-item, .sidebar.mobile-open .nav-group, .sidebar.mobile-open .nav-sub-group { animation: slideInRight 0.5s var(--ease-tech) forwards; opacity: 0; transform: translateX(-10px); }
+            @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+            
+            /* --- STRICT MOBILE CONTAINMENT --- */
+            #form-card { 
+                padding: 16px 12px; 
+                padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); 
+                width: 100%;
             }
-            .card { 
-                border-radius: 14px; 
-                border: 1px solid var(--border-subtle); 
+
+            .order-form { 
+                padding: 20px 16px; 
+                box-shadow: none; border: none; background: transparent; backdrop-filter: none; 
+                gap: 16px; /* Tighter gap to save vertical space */
+                width: 100%; margin: 0; 
+            }
+
+            .row-group { flex-direction: column; gap: 16px; width: 100%; }
+            
+            .form-input, select.form-input { 
+                width: 100% !important; /* Force adherence to parent */
+                max-width: 100% !important; 
             }
             
-            .sidebar.mobile-open .nav-item, .sidebar.mobile-open .nav-group { animation: slideInRight 0.5s var(--ease-tech) forwards; opacity: 0; transform: translateX(-10px); }
-            .sidebar.mobile-open .nav-group:nth-child(1) { animation-delay: 0.1s; }
-            .sidebar.mobile-open .nav-item:nth-child(2) { animation-delay: 0.15s; }
-            .sidebar.mobile-open .nav-item:nth-child(3) { animation-delay: 0.2s; }
-            .sidebar.mobile-open .nav-item:nth-child(4) { animation-delay: 0.25s; }
-            .sidebar.mobile-open .nav-group:nth-child(5) { animation-delay: 0.3s; }
-            .sidebar.mobile-open .nav-item:nth-child(6) { animation-delay: 0.35s; }
-            @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+            /* VERTICAL STACK FOR RADIO BUTTONS ON MOBILE */
+            .recipient-toggle { 
+                flex-direction: column; /* Stacks buttons vertically to prevent horizontal stretching */
+            }
+            .recipient-toggle label { 
+                font-size: 0.85rem; 
+                padding: 14px 10px; 
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Divider line */
+            }
+            .recipient-toggle input[type="radio"]:last-of-type + label {
+                border-bottom: none;
+            }
+            
+            .btn-whatsapp { 
+                font-size: 0.95rem; 
+                padding: 16px; 
+                width: 100%; 
+                height: auto;
+                min-height: 56px;
+                flex-wrap: wrap; 
+            }
         }
     </style>
 </head>
@@ -301,7 +340,7 @@
     <div class="sidebar-overlay" id="menu-overlay" onclick="toggleMobileMenu()"></div>
 
     <div class="sidebar" id="app-sidebar">
-        <div>
+        <div class="sidebar-menu-container">
             <div class="sidebar-header">
                 <div class="sidebar-header-title">
                     <span class="material-symbols-rounded">account_tree</span>
@@ -316,19 +355,39 @@
             </div>
 
             <div class="nav-group">Kalamboli Congregation</div>
-            <div class="nav-item active" onclick="switchTab('kalamboli-hindi', 'Kalamboli Literature - Hindi', this)">
-                <span class="material-symbols-rounded">segment</span> Hindi
+            
+            <div class="nav-sub-group">Literature</div>
+            <div class="nav-item sub-item active" onclick="switchTab('kalamboli-hindi', 'Kalamboli Literature - Hindi', this)">
+                <span class="material-symbols-rounded">menu_book</span> Hindi
             </div>
-            <div class="nav-item" onclick="switchTab('kalamboli-english', 'Kalamboli Literature - English', this)">
-                <span class="material-symbols-rounded">segment</span> English
+            <div class="nav-item sub-item" onclick="switchTab('kalamboli-english', 'Kalamboli Literature - English', this)">
+                <span class="material-symbols-rounded">menu_book</span> English
             </div>
-            <div class="nav-item" onclick="switchTab('kalamboli-marathi', 'Kalamboli Literature - Marathi', this)">
-                <span class="material-symbols-rounded">segment</span> Marathi
+            <div class="nav-item sub-item" onclick="switchTab('kalamboli-marathi', 'Kalamboli Literature - Marathi', this)">
+                <span class="material-symbols-rounded">menu_book</span> Marathi
             </div>
 
-            <div class="nav-group" style="margin-top: 15px;">Language Group</div>
-            <div class="nav-item" onclick="switchTab('language-hindi', 'Language Congregation - Hindi', this)">
-                <span class="material-symbols-rounded">segment</span> Hindi
+            <div class="nav-sub-group" style="padding-top: 16px;">Cart, Standee, Posters</div>
+            <div class="nav-item sub-item" onclick="switchTab('cart-summary', 'Cart - Summary Dashboard', this)">
+                <span class="material-symbols-rounded">space_dashboard</span> Summary Dashboard
+            </div>
+            <div class="nav-item sub-item" onclick="switchTab('cart-posters', 'Cart - Posters Matrix', this)">
+                <span class="material-symbols-rounded">grid_view</span> Posters Matrix
+            </div>
+            <div class="nav-item sub-item" onclick="switchTab('cart-equipments', 'Cart - Equipments Matrix', this)">
+                <span class="material-symbols-rounded">inventory_2</span> Equipments Matrix
+            </div>
+
+            <div class="nav-group" style="margin-top: 10px;">Language Group</div>
+            
+            <div class="nav-sub-group">Literature</div>
+            <div class="nav-item sub-item" onclick="switchTab('language-hindi', 'Language Group - Hindi', this)">
+                <span class="material-symbols-rounded">menu_book</span> Hindi
+            </div>
+
+            <div class="nav-group" style="margin-top: 10px; border-top: 1px solid var(--border-subtle); padding-top: 16px;">Actions</div>
+            <div class="nav-item" onclick="switchTab('literature-order', 'Place Literature Order', this)">
+                <span class="material-symbols-rounded">add_shopping_cart</span> Place Literature Order
             </div>
         </div>
         
@@ -358,19 +417,174 @@
                 <div class="card-overlay" id="frame-loader">
                     <span class="card-overlay-text tech-font">AWAITING CONNECTION...</span>
                 </div>
-                
                 <iframe id="main-frame" class="iframe-view" scrolling="yes"></iframe>
+            </div>
+
+            <div class="card" id="form-card">
+                <form class="order-form" onsubmit="submitOrderForm(event)">
+                    <div class="order-form-header">
+                        <span class="material-symbols-rounded">library_books</span>
+                        <h2>Literature Request</h2>
+                        <p>Securely route your order directly via WhatsApp</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="order-name">Full Name</label>
+                        <input type="text" id="order-name" class="form-input" required placeholder="Enter your full name">
+                    </div>
+        
+                    <div class="form-group">
+                        <label class="form-label" for="order-pub">Publication</label>
+                        <select id="order-pub" class="form-input" required onchange="toggleOtherField('order-pub', 'group-pub-other')">
+                            <option value="" disabled selected>Select an item from inventory</option>
+                            
+                            <optgroup label="Bibles">
+                                <option value="New World Translation (nwt)">New World Translation (nwt)</option>
+                                <option value="New World Translation Pocket (nwtpkt)">New World Translation Pocket (nwtpkt)</option>
+                                <option value="Other Bibles">Other Bibles</option>
+                            </optgroup>
+
+                            <optgroup label="Books">
+                                <option value="Ministry School (be)">Ministry School (be)</option>
+                                <option value="Teach Us (bhs)">Teach Us (bhs)</option>
+                                <option value="Bearing Witness (bt)">Bearing Witness (bt)</option>
+                                <option value="My Follower (cf)">"My Follower" (cf)</option>
+                                <option value="Close to Jehovah (cl)">Close to Jehovah (cl)</option>
+                                <option value="Imitate Their Faith (ia)">Imitate (ia)</option>
+                                <option value="Jesus-The Way (jy)">Jesus-The Way (jy)</option>
+                                <option value="God's Kingdom Rules (kr)">God's Kingdom Rules (kr)</option>
+                                <option value="Learn From the Great Teacher (lfb)">Learn From Teacher (lfb)</option>
+                                <option value="Enjoy Life Forever (lff)">Enjoy Life Forever (lff)</option>
+                                <option value="Teacher (lr)">Teacher (lr)</option>
+                                <option value="Remain in God's Love (lvs)">Remain in Love (lvs)</option>
+                                <option value="Organized to Do Jehovah's Will (od)">Organized (od)</option>
+                                <option value="Pure Worship (rr)">Pure Worship (rr)</option>
+                                <option value="Scriptures (scl)">Scriptures (scl)</option>
+                                <option value="Sing Out Joyfully (s)">"Sing Out Joyfully" (s)</option>
+                                <option value="Sing Out Joyfully Large (sjjls)">"Sing Out Joyfully" Large (sjjls)</option>
+                                <option value="Sing Out Joyfully Pocket (sjjyls)">"Sing Out Joyfully" Pocket (sjjyls)</option>
+                                <option value="Young People Ask Vol 1 (yp1)">Young People Ask Vol 1 (yp1)</option>
+                                <option value="Young People Ask Vol 2 (yp2)">Young People Ask Vol 2 (yp2)</option>
+                                <option value="Other books">Other books</option>
+                            </optgroup>
+
+                            <optgroup label="Brochures and Booklets">
+                                <option value="Reading and Writing (ay)">Reading and Writing (ay)</option>
+                                <option value="Education (ed)">Education (ed)</option>
+                                <option value="Good News (fg)">Good News (fg)</option>
+                                <option value="Happy Family (hf)">Happy Family (hf)</option>
+                                <option value="Happy Life (hl)">Happy Life (hl)</option>
+                                <option value="Satisfying Life (la)">Satisfying Life (la)</option>
+                                <option value="Was Life Created? (lc)">Was Life Created? (lc)</option>
+                                <option value="Listen to God (ld)">Listen to God (ld)</option>
+                                <option value="Origin of Life (lf)">Origin of Life (lf)</option>
+                                <option value="Enjoy Life Forever (lffi)">Enjoy Life Forever (lffi)</option>
+                                <option value="Listen and Live (ll)">Listen and Live (ll)</option>
+                                <option value="Love People (lmd)">Love People (lmd)</option>
+                                <option value="My Bible Lessons (mb)">My Bible Lessons (mb)</option>
+                                <option value="Road to Life (ol)">Road to Life (ol)</option>
+                                <option value="Lasting Peace (pc)">Lasting Peace (pc)</option>
+                                <option value="Pathway to Peace (ph)">Pathway to Peace (ph)</option>
+                                <option value="Return to Jehovah (rj)">Return to Jehovah (rj)</option>
+                                <option value="Real Faith (rk)">Real Faith (rk)</option>
+                                <option value="Spirits of the Dead (sp)">Spirits of the Dead (sp)</option>
+                                <option value="Teaching (th)">Teaching (th)</option>
+                                <option value="Wisdom From God (wfg)">Wisdom From God (wfg)</option>
+                                <option value="10 Questions (ypq)">10 Questions (ypq)</option>
+                                <option value="Other brochures and booklets">Other brochures and booklets</option>
+                            </optgroup>
+
+                            <optgroup label="Tracts">
+                                <option value="Invitation (inv)">Invitation (inv)</option>
+                                <option value="View the Bible (T-30)">View the Bible (T-30)</option>
+                                <option value="View the Future (T-31)">View the Future (T-31)</option>
+                                <option value="Happy Family (T-32)">Happy Family (T-32)</option>
+                                <option value="Who Controls the World? (T-33)">Who Controls the World? (T-33)</option>
+                                <option value="Will Suffering End? (T-34)">Will Suffering End? (T-34)</option>
+                                <option value="Live Again (T-35)">Live Again (T-35)</option>
+                                <option value="Kingdom (T-36)">Kingdom (T-36)</option>
+                                <option value="Website tract (T-37)">Website tract (T-37)</option>
+                                <option value="Other tracts">Other tracts</option>
+                            </optgroup>
+
+                            <optgroup label="Contact Cards">
+                                <option value="Contact card (jwcd1)">Contact card (jwcd1)</option>
+                                <option value="Contact card (jwcd4)">Contact card (jwcd4)</option>
+                                <option value="Contact card (jwcd9)">Contact card (jwcd9)</option>
+                                <option value="Contact card (jwcd10)">Contact card (jwcd10)</option>
+                                <option value="Other contact cards">Other contact cards</option>
+                            </optgroup>
+
+                            <optgroup label="Public Magazines">
+                                <option value="Awake! Magazine (g)">Awake! Magazine (Specify issue in Other)</option>
+                                <option value="Watchtower Magazine (wp)">Watchtower Magazine (Specify issue in Other)</option>
+                                <option value="All other public magazines">All other public magazines</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group hidden-field" id="group-pub-other">
+                        <label class="form-label" for="order-pub-other">Specify Publication Name</label>
+                        <input type="text" id="order-pub-other" class="form-input" placeholder="Type specific name or issue (e.g. g26.1)">
+                    </div>
+        
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label class="form-label" for="order-lang">Language</label>
+                            <select id="order-lang" class="form-input" required onchange="toggleOtherField('order-lang', 'group-lang-other')">
+                                <option value="" disabled selected>Select</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="English">English</option>
+                                <option value="Marathi">Marathi</option>
+                                <option value="Other">Other...</option>
+                            </select>
+                        </div>
+            
+                        <div class="form-group">
+                            <label class="form-label" for="order-qty">Quantity</label>
+                            <input type="number" id="order-qty" class="form-input" required min="1" placeholder="Qty">
+                        </div>
+                    </div>
+
+                    <div class="form-group hidden-field" id="group-lang-other">
+                        <label class="form-label" for="order-lang-other">Specify Language</label>
+                        <input type="text" id="order-lang-other" class="form-input" placeholder="Enter language name">
+                    </div>
+
+                    <div class="form-group" style="margin-top: 8px;">
+                        <label class="form-label">Route Request To</label>
+                        <div class="recipient-toggle">
+                            <input type="radio" id="rec-1" name="whatsapp-target" value="919820403070" checked>
+                            <label for="rec-1">Literature Assistant</label>
+                            
+                            <input type="radio" id="rec-2" name="whatsapp-target" value="917738256655">
+                            <label for="rec-2">Literature Overseer</label>
+                        </div>
+                    </div>
+        
+                    <button type="submit" class="btn-whatsapp">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.487-1.761-1.663-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+                        </svg>
+                        Send Request via WhatsApp
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
         const dashboardUrls = {
-            // Note: wdAllowInteractivity=False is applied here for crash prevention on mobile
             'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQTfOsh-TtpYR6r76UetTjpDAR1ls-o5Fx1Lv0M-0gu0bXs?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
             'kalamboli-english': "https://1drv.ms/x/c/196756A31661DF84/IQQN1FGpxPT8QKFYTXsvY6L9AfQ4S1Ptqqn9pwydt69tudY?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True", 
             'kalamboli-marathi': "https://1drv.ms/x/c/196756A31661DF84/IQR0m8GjjoJyTq90pV7nT1j9AcQKYPdKSY4Iftmjq9lrKN4?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
-            'language-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQRyPzOnEG8YQaT-N64JE-X1AbSfNLxAf_khTofkSC3XCqQ?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True"
+            
+            'cart-summary': "https://1drv.ms/x/c/196756A31661DF84/IQRF3iSG_SpTSqGnMC-gOQKGAbpjJ140R422jweP6VVjzhk?em=2&wdAllowInteractivity=False&Item='Summary%20Dashboard'!A1%3AQ80&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0",
+            'cart-posters': "https://1drv.ms/x/c/196756A31661DF84/IQRF3iSG_SpTSqGnMC-gOQKGAbpjJ140R422jweP6VVjzhk?em=2&wdAllowInteractivity=False&Item='Posters%20Matrix'!B1%3AQ8&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0",
+            'cart-equipments': "https://1drv.ms/x/c/196756A31661DF84/IQRF3iSG_SpTSqGnMC-gOQKGAbpjJ140R422jweP6VVjzhk?em=2&wdAllowInteractivity=False&Item='Equipment%20Matrix'!A1%3AH8&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0",
+            
+            'language-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQRyPzOnEG8YQaT-N64JE-X1AbSfNLxAf_khTofkSC3XCqQ?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
+            'literature-order': "form" 
         };
 
         let currentActiveKey = 'kalamboli-hindi';
@@ -396,9 +610,7 @@
                 document.getElementById('frame-loader').classList.add('active');
                 document.getElementById('laser-loader').classList.add('active');
                 
-                // Initial build
                 rebuildIframe(dashboardUrls[currentActiveKey]);
-
             }, 2800); 
         }
 
@@ -407,29 +619,19 @@
             document.getElementById('menu-overlay').classList.toggle('mobile-open');
         }
 
-        // --- THE DOM DESTRUCTION (NUKE) FUNCTION ---
         function rebuildIframe(targetUrl) {
             const container = document.getElementById('dashboard-card');
             const oldIframe = document.getElementById('main-frame');
             
-            // 1. Erase the old iframe from memory entirely
-            if (oldIframe) {
-                oldIframe.remove();
-            }
+            if (oldIframe) { oldIframe.remove(); }
 
-            // 2. Build a completely new iframe hardware instance
             const newIframe = document.createElement('iframe');
             newIframe.id = 'main-frame';
             newIframe.className = 'iframe-view';
             newIframe.scrolling = 'yes';
-            
-            // 3. Re-attach the hiding logic
             newIframe.onload = hideLoader;
-            
-            // 4. Set the exact URL (No cache-busting timestamp needed with this method)
             newIframe.src = targetUrl; 
 
-            // 5. Inject back into the DOM underneath the loaders
             container.appendChild(newIframe);
         }
 
@@ -440,14 +642,21 @@
             
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             clickedElement.classList.add('active');
-            
             currentActiveKey = targetKey;
-            
-            document.getElementById('frame-loader').classList.add('active');
-            document.getElementById('laser-loader').classList.add('active');
-            
-            // Rebuild with new URL
-            rebuildIframe(dashboardUrls[targetKey]);
+
+            if (targetKey === 'literature-order') {
+                document.getElementById('dashboard-card').style.display = 'none';
+                document.getElementById('form-card').style.display = 'flex';
+                document.getElementById('refresh-btn').style.display = 'none'; 
+            } else {
+                document.getElementById('dashboard-card').style.display = 'flex';
+                document.getElementById('form-card').style.display = 'none';
+                document.getElementById('refresh-btn').style.display = 'flex';
+                
+                document.getElementById('frame-loader').classList.add('active');
+                document.getElementById('laser-loader').classList.add('active');
+                rebuildIframe(dashboardUrls[targetKey]);
+            }
 
             if (window.innerWidth <= 900) {
                 setTimeout(() => { toggleMobileMenu(); }, 150);
@@ -455,16 +664,58 @@
         }
 
         function triggerManualRefresh() {
-            const btn = document.getElementById('refresh-btn');
+            if(currentActiveKey === 'literature-order') return;
             
+            const btn = document.getElementById('refresh-btn');
             document.getElementById('frame-loader').classList.add('active');
             document.getElementById('laser-loader').classList.add('active');
             
-            // Forcefully rebuild the exact same URL to flush the frame cache
             rebuildIframe(dashboardUrls[currentActiveKey]);
 
             btn.classList.add('animating');
             setTimeout(() => { btn.classList.remove('animating'); }, 1000); 
+        }
+
+        function toggleOtherField(selectId, groupObjId) {
+            const selectEl = document.getElementById(selectId);
+            const hiddenGroup = document.getElementById(groupObjId);
+            
+            if(selectEl.value.includes('Other') || selectEl.value.includes('Magazine (')) {
+                hiddenGroup.style.display = 'flex';
+                hiddenGroup.querySelector('input').setAttribute('required', 'true');
+            } else {
+                hiddenGroup.style.display = 'none';
+                hiddenGroup.querySelector('input').removeAttribute('required');
+                hiddenGroup.querySelector('input').value = ''; 
+            }
+        }
+
+        function submitOrderForm(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('order-name').value.trim();
+            
+            let pub = document.getElementById('order-pub').value;
+            if(pub.includes('Other') || pub.includes('Magazine (')) {
+                pub = pub + " - " + document.getElementById('order-pub-other').value.trim();
+            }
+
+            let lang = document.getElementById('order-lang').value;
+            if(lang === 'Other') {
+                lang = document.getElementById('order-lang-other').value.trim();
+            }
+
+            const qty = document.getElementById('order-qty').value;
+            const targetPhone = document.querySelector('input[name="whatsapp-target"]:checked').value;
+
+            const messageStr = `*Literature Order Request*\n\n*Name:* ${name}\n*Publication:* ${pub}\n*Language:* ${lang}\n*Quantity:* ${qty}`;
+            
+            const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(messageStr)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            e.target.reset();
+            document.getElementById('group-pub-other').style.display = 'none';
+            document.getElementById('group-lang-other').style.display = 'none';
         }
 
         window.onload = () => {
