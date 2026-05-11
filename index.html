@@ -516,8 +516,8 @@
                             </optgroup>
 
                             <optgroup label="Public Magazines">
-                                <option value="Awake! Magazine (g)">Awake! Magazine (Specify issue in Other)</option>
-                                <option value="Watchtower Magazine (wp)">Watchtower Magazine (Specify issue in Other)</option>
+                                <option value="Awake! Magazine (g)">Awake! Magazine (Specify the name)</option>
+                                <option value="Watchtower Magazine (wp)">Watchtower Magazine (Specify the name)</option>
                                 <option value="All other public magazines">All other public magazines</option>
                             </optgroup>
                         </select>
@@ -525,7 +525,7 @@
 
                     <div class="form-group hidden-field" id="group-pub-other">
                         <label class="form-label" for="order-pub-other">Specify Publication Name</label>
-                        <input type="text" id="order-pub-other" class="form-input" placeholder="Type specific name or issue (e.g. g26.1)">
+                        <input type="text" id="order-pub-other" class="form-input" placeholder="Type specific name (e.g. g26.1 or wp26.1)">
                     </div>
         
                     <div class="row-group">
@@ -549,6 +549,11 @@
                     <div class="form-group hidden-field" id="group-lang-other">
                         <label class="form-label" for="order-lang-other">Specify Language</label>
                         <input type="text" id="order-lang-other" class="form-input" placeholder="Enter language name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="order-comment">Comment <span style="text-transform: none; font-weight: normal; color: var(--text-low);">(Optional)</span></label>
+                        <textarea id="order-comment" class="form-input" placeholder="Add specific issue details, note, or special instructions..." rows="3" style="resize: vertical; min-height: 80px;"></textarea>
                     </div>
 
                     <div class="form-group" style="margin-top: 8px;">
@@ -706,9 +711,14 @@
             }
 
             const qty = document.getElementById('order-qty').value;
+            const comment = document.getElementById('order-comment').value.trim();
             const targetPhone = document.querySelector('input[name="whatsapp-target"]:checked').value;
 
-            const messageStr = `*Literature Order Request*\n\n*Name:* ${name}\n*Publication:* ${pub}\n*Language:* ${lang}\n*Quantity:* ${qty}`;
+            let messageStr = `*Literature Order Request*\n\n*Name:* ${name}\n*Publication:* ${pub}\n*Language:* ${lang}\n*Quantity:* ${qty}`;
+            
+            if (comment) {
+                messageStr += `\n*Comment:* ${comment}`;
+            }
             
             const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(messageStr)}`;
             window.open(whatsappUrl, '_blank');
