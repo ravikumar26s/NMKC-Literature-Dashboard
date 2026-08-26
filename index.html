@@ -25,6 +25,7 @@
             --bg-elevated: #181d2e; 
             --accent: #38bdf8; 
             --accent-dim: rgba(56, 189, 248, 0.15);
+            --warning: #facc15;
             --whatsapp-green: #25D366;
             --text-high: #f8fafc;
             --text-med: #94a3b8;
@@ -91,6 +92,46 @@
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scanLine { 0% { top: -30%; } 100% { top: 100%; } }
+
+        /* ========================================= */
+        /* --- SYSTEM ALERT POPUP ---                */
+        /* ========================================= */
+        #system-alert {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background-color: rgba(9, 12, 21, 0.85); z-index: 9990;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s var(--ease-tech);
+            padding: 20px;
+        }
+        #system-alert.active { opacity: 1; pointer-events: all; }
+        
+        .alert-box {
+            background-color: var(--bg-elevated);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(250, 204, 21, 0.1);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.5s var(--ease-tech);
+        }
+        #system-alert.active .alert-box { transform: translateY(0) scale(1); }
+        
+        .alert-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .alert-header .material-symbols-rounded { color: var(--warning); font-size: 28px; }
+        .alert-header h3 { margin: 0; color: var(--text-high); font-size: 1.1rem; font-weight: 500; letter-spacing: 0.5px; }
+        
+        .alert-body { color: var(--text-med); font-size: 0.85rem; line-height: 1.5; margin-bottom: 24px; }
+        
+        .alert-btn {
+            background: rgba(250, 204, 21, 0.1); color: var(--warning); border: 1px solid rgba(250, 204, 21, 0.3);
+            width: 100%; padding: 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+        }
+        .alert-btn:hover { background: rgba(250, 204, 21, 0.2); }
+        .alert-btn:active { transform: scale(0.98); }
 
         /* ========================================= */
         /* --- SIDEBAR & NAVIGATION ---              */
@@ -335,6 +376,20 @@
         </div>
         <div class="tech-loader"></div>
         <p class="splash-status tech-font" id="boot-status">ESTABLISHING SECURE PROTOCOL...</p>
+    </div>
+
+    <!-- System Alert Popup Overlay -->
+    <div id="system-alert">
+        <div class="alert-box">
+            <div class="alert-header">
+                <span class="material-symbols-rounded">warning</span>
+                <h3>System Notice</h3>
+            </div>
+            <div class="alert-body">
+                Subset user facing Onedrive connections to sheet (displaying) in dashboard. Soon will be fixed.
+            </div>
+            <button class="alert-btn" onclick="dismissAlert()">Acknowledge</button>
+        </div>
     </div>
 
     <div class="sidebar-overlay" id="menu-overlay" onclick="toggleMobileMenu()"></div>
@@ -601,6 +656,10 @@
             }, 400); 
         }
 
+        function dismissAlert() {
+            document.getElementById('system-alert').classList.remove('active');
+        }
+
         function initializeApp() {
             const statusText = document.getElementById('boot-status');
             
@@ -617,6 +676,11 @@
                 
                 rebuildIframe(dashboardUrls[currentActiveKey]);
             }, 2800); 
+
+            // Trigger system alert slightly after the splash screen is dismissed
+            setTimeout(() => {
+                document.getElementById('system-alert').classList.add('active');
+            }, 3400);
         }
 
         function toggleMobileMenu() {
