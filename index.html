@@ -580,7 +580,7 @@
 
     <script>
         const dashboardUrls = {
-            'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQRitEdu1gOtTqA1aSK67_vVAS9SzvZUOHiW5tROcdnDCoc?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdInConfigurator=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0",
+            'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQRitEdu1gOtTqA1aSK67_vVAS9SzvZUOHiW5tROcdnDCoc?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
             'kalamboli-english': "https://1drv.ms/x/c/196756A31661DF84/IQRQP9dEidyFSYPOmsXaOxWmAez4nW0GJzG-8jyH0rmm29A?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0", 
             'kalamboli-marathi': "https://1drv.ms/x/c/196756A31661DF84/IQSUEGdR-NbZQL2srB0ZhKR0Afkit3M7O7i2HuXBAREVIFQ?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0",
             
@@ -624,10 +624,11 @@
             document.getElementById('menu-overlay').classList.toggle('mobile-open');
         }
 
-        function rebuildIframe(targetUrl) {
+        function rebuildIframe(targetUrl, bypassCache = false) {
             const container = document.getElementById('dashboard-card');
             const oldIframe = document.getElementById('main-frame');
             
+            // Completely destroy the old iframe to free up memory and drop its internal state
             if (oldIframe) { oldIframe.remove(); }
 
             const newIframe = document.createElement('iframe');
@@ -635,8 +636,19 @@
             newIframe.className = 'iframe-view';
             newIframe.scrolling = 'yes';
             newIframe.onload = hideLoader;
-            newIframe.src = targetUrl; 
 
+            let finalUrl = targetUrl;
+            
+            // Hard Refresh Logic
+            if (bypassCache && targetUrl !== 'form') {
+                const separator = finalUrl.includes('?') ? '&' : '?';
+                
+                // 1. wdRefresh=1 forces Excel Online to refresh connections on Microsoft's end
+                // 2. nocache=timestamp forces the user's browser to fetch a brand new iframe instance
+                finalUrl = `${finalUrl}${separator}wdRefresh=1&nocache=${new Date().getTime()}`;
+            }
+
+            newIframe.src = finalUrl; 
             container.appendChild(newIframe);
         }
 
@@ -660,7 +672,8 @@
                 
                 document.getElementById('frame-loader').classList.add('active');
                 document.getElementById('laser-loader').classList.add('active');
-                rebuildIframe(dashboardUrls[targetKey]);
+                
+                rebuildIframe(dashboardUrls[targetKey], false);
             }
 
             if (window.innerWidth <= 900) {
@@ -668,14 +681,25 @@
             }
         }
 
-        function triggerManualRefresh() {
+        async function triggerManualRefresh() {
             if(currentActiveKey === 'literature-order') return;
             
             const btn = document.getElementById('refresh-btn');
             document.getElementById('frame-loader').classList.add('active');
             document.getElementById('laser-loader').classList.add('active');
             
-            rebuildIframe(dashboardUrls[currentActiveKey]);
+            // Attempt to clear browser CacheStorage if available (Modern Cache Clearing)
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                } catch (e) {
+                    console.log('Cache clear bypassed');
+                }
+            }
+
+            // Pass TRUE to rebuild the iframe and bypass all caches
+            rebuildIframe(dashboardUrls[currentActiveKey], true);
 
             btn.classList.add('animating');
             setTimeout(() => { btn.classList.remove('animating'); }, 1000); 
