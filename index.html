@@ -383,10 +383,12 @@
         <div class="alert-box">
             <div class="alert-header">
                 <span class="material-symbols-rounded">warning</span>
-                <h3>System Notice</h3>
+                <!-- Added ID for dynamic titles -->
+                <h3 id="alert-title">System Notice</h3>
             </div>
-            <div class="alert-body">
-                2,00,000+ Users are getting affected | Onedrive Embed URLs are not working. Blank sheet is getting displayed.. Soon will be fixed.
+            <!-- Added ID for dynamic messages -->
+            <div class="alert-body" id="alert-message">
+                <!-- Message will be dynamically injected here -->
             </div>
             <button class="alert-btn" onclick="dismissAlert()">Acknowledge</button>
         </div>
@@ -634,6 +636,29 @@
     </div>
 
     <script>
+        // ==========================================
+        // ADMIN CONFIG: SYSTEM NOTICES
+        // ==========================================
+        // You can easily create multiple notices here. 
+        // Just set active: true on the one you want to show.
+        // If active is false for all, the popup will not show.
+        const systemNotices = [
+            {
+                id: "onedrive_issue",
+                title: "System Notice",
+                message: "2,00,000+ Users are getting affected | Onedrive Embed URLs are not working. Blank sheet is getting displayed.. Soon will be fixed.",
+                active: true // Change to false to hide this message
+            },
+            {
+                id: "maintenance_alert",
+                title: "Maintenance Alert",
+                message: "Scheduled maintenance is coming up this Saturday. Expect minor interruptions.",
+                active: false // Change to true to show this message
+            }
+        ];
+
+        // ==========================================
+
         const dashboardUrls = {
             'kalamboli-hindi': "https://1drv.ms/x/c/196756A31661DF84/IQRitEdu1gOtTqA1aSK67_vVASK_81H0-Vw6A8tUB5Mow6U?em=2&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True",
             'kalamboli-english': "https://1drv.ms/x/c/196756A31661DF84/IQRQP9dEidyFSYPOmsXaOxWmAez4nW0GJzG-8jyH0rmm29A?em=2&wdAllowInteractivity=False&Item='Yearly%20Summary'!A1%3AF107&wdHideGridlines=True&wdInConfigurator=True&wdInConfigurator=True&edaebf=rslc0", 
@@ -654,6 +679,19 @@
                 document.getElementById('frame-loader').classList.remove('active');
                 document.getElementById('laser-loader').classList.remove('active');
             }, 400); 
+        }
+
+        function checkAndShowAlerts() {
+            // Find the first notice that has active: true
+            const activeNotice = systemNotices.find(notice => notice.active);
+            
+            if (activeNotice) {
+                document.getElementById('alert-title').innerText = activeNotice.title;
+                document.getElementById('alert-message').innerText = activeNotice.message;
+                
+                // Show the alert box
+                document.getElementById('system-alert').classList.add('active');
+            }
         }
 
         function dismissAlert() {
@@ -677,9 +715,9 @@
                 rebuildIframe(dashboardUrls[currentActiveKey]);
             }, 2800); 
 
-            // Trigger system alert slightly after the splash screen is dismissed
+            // Trigger system alert checking slightly after the splash screen is dismissed
             setTimeout(() => {
-                document.getElementById('system-alert').classList.add('active');
+                checkAndShowAlerts();
             }, 3400);
         }
 
